@@ -1,880 +1,554 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>YAKKUM – Human Resources Request Form</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>YAKKUM - Human Resources Request Form</title>
   <style>
-    :root {
-      --biru: #1a56a0;
-      --biru-muda: #e8f0fb;
-      --hijau: #1a7a4a;
-      --merah: #c0392b;
-      --abu: #f5f6fa;
-      --border: #d1d5db;
-      --teks: #1f2937;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--abu); color: var(--teks); }
-
-    /* HEADER */
-    .header {
-      background: var(--biru);
-      color: white;
-      padding: 18px 32px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .header-logo {
-      width: 54px; height: 54px;
-      background: white;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px; font-weight: 900; color: var(--biru);
-      flex-shrink: 0;
-    }
-    .header-title h1 { font-size: 1.3rem; font-weight: 700; }
-    .header-title p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
-
-    /* CONTAINER */
-    .container { max-width: 860px; margin: 32px auto; padding: 0 16px 60px; }
-
-    /* STEP INDICATOR */
-    .steps {
-      display: flex; justify-content: space-between;
-      position: relative; margin-bottom: 32px;
-    }
-    .steps::before {
-      content: '';
-      position: absolute; top: 20px; left: 10%; right: 10%;
-      height: 3px; background: var(--border); z-index: 0;
-    }
-    .step {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 6px; z-index: 1; width: 20%;
-    }
-    .step-circle {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: white; border: 3px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.95rem; color: #9ca3af;
-      transition: all 0.3s;
-    }
-    .step.active   .step-circle { background: var(--biru); border-color: var(--biru); color: white; }
-    .step.done     .step-circle { background: var(--hijau); border-color: var(--hijau); color: white; }
-    .step-label { font-size: 0.7rem; text-align: center; color: #6b7280; font-weight: 500; }
-    .step.active .step-label { color: var(--biru); font-weight: 700; }
-    .step.done   .step-label { color: var(--hijau); }
-
-    /* CARD */
-    .card {
-      background: white; border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      padding: 32px; margin-bottom: 20px;
-    }
-    .card-title {
-      font-size: 1.1rem; font-weight: 700;
-      color: var(--biru); margin-bottom: 20px;
-      padding-bottom: 10px; border-bottom: 2px solid var(--biru-muda);
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    /* FORM */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-grid.full { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group.span2 { grid-column: span 2; }
-    label { font-size: 0.83rem; font-weight: 600; color: #374151; }
-    label .req { color: var(--merah); margin-left: 2px; }
-    input, select, textarea {
-      padding: 9px 12px; border: 1.5px solid var(--border);
-      border-radius: 7px; font-size: 0.9rem; color: var(--teks);
-      transition: border-color 0.2s; background: white;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none; border-color: var(--biru);
-      box-shadow: 0 0 0 3px rgba(26,86,160,0.1);
-    }
-    textarea { resize: vertical; min-height: 90px; }
-    .hint { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
-
-    /* DIRECTORATE TABS */
-    .dir-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-    .dir-tab {
-      padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border);
-      background: white; cursor: pointer; font-size: 0.83rem; font-weight: 600;
-      transition: all 0.2s; color: #6b7280;
-    }
-    .dir-tab.active { border-color: var(--biru); background: var(--biru); color: white; }
-    .dir-panel { display: none; }
-    .dir-panel.active { display: block; }
-
-    /* APPROVAL CHAIN */
-    .approval-item {
-      background: var(--biru-muda); border-radius: 8px;
-      padding: 14px 16px; margin-bottom: 12px;
-      border-left: 4px solid var(--biru);
-    }
-    .approval-item.required { border-left-color: var(--merah); }
-    .approval-level {
-      font-size: 0.75rem; font-weight: 700;
-      color: var(--biru); text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 6px;
-    }
-    .approval-item.required .approval-level { color: var(--merah); }
-
-    /* BUTTONS */
-    .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-    .btn {
-      padding: 10px 28px; border-radius: 8px; border: none;
-      font-size: 0.9rem; font-weight: 600; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary { background: var(--biru); color: white; }
-    .btn-primary:hover { background: #1345a0; }
-    .btn-secondary { background: white; color: var(--biru); border: 2px solid var(--biru); }
-    .btn-secondary:hover { background: var(--biru-muda); }
-    .btn-success { background: var(--hijau); color: white; }
-    .btn-success:hover { background: #145f38; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* REVIEW TABLE */
-    .review-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .review-table tr:nth-child(even) td { background: var(--biru-muda); }
-    .review-table td { padding: 9px 12px; border: 1px solid var(--border); }
-    .review-table td:first-child { font-weight: 600; width: 38%; color: #374151; }
-
-    /* REF NUMBER */
-    .ref-badge {
-      background: var(--biru); color: white;
-      padding: 6px 14px; border-radius: 20px;
-      font-size: 0.8rem; font-weight: 700;
-      display: inline-block; margin-bottom: 16px;
-      letter-spacing: 0.5px;
-    }
-
-    /* SUCCESS */
-    .success-box {
-      text-align: center; padding: 48px 32px;
-    }
-    .success-icon {
-      width: 80px; height: 80px; background: #d1fae5;
-      border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 40px;
-      margin: 0 auto 20px;
-    }
-    .success-box h2 { color: var(--hijau); font-size: 1.4rem; margin-bottom: 10px; }
-    .success-box p  { color: #6b7280; font-size: 0.9rem; line-height: 1.6; }
-
-    /* LOADING SPINNER */
-    .spinner {
-      display: inline-block; width: 18px; height: 18px;
-      border: 3px solid rgba(255,255,255,0.4);
-      border-top-color: white; border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-right: 8px; vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ERROR */
-    .error-msg {
-      background: #fee2e2; border: 1px solid #fca5a5;
-      border-radius: 7px; padding: 10px 14px;
-      color: var(--merah); font-size: 0.85rem;
-      margin-top: 12px; display: none;
-    }
-
-    /* SIGNATURE */
-    .sig-box {
-      border: 2px dashed var(--border); border-radius: 8px;
-      padding: 16px; text-align: center;
-      background: var(--abu); cursor: pointer;
-      font-size: 0.85rem; color: #6b7280;
-    }
-    canvas { border: 1px solid var(--border); border-radius: 6px; cursor: crosshair; }
-
-    @media (max-width: 600px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .form-group.span2 { grid-column: span 1; }
-      .header { padding: 14px 16px; }
-      .card { padding: 20px; }
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1a4d8f;--lblue:#2a72d5;--green:#1b6e3a;--lgreen:#22a85a;--red:#b91c1c;--lred:#ef4444;--orange:#d97706;--lorange:#f59e0b;--gray:#f4f6fb;--border:#d0d7e3;--text:#1e2a3a;--muted:#6c7a8d;--white:#ffffff;--shadow:0 4px 24px rgba(26,77,143,0.10)}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#e8eef7,#f0f4fb);min-height:100vh;color:var(--text)}
+    header{background:linear-gradient(100deg,#0f2d5e,#1a4d8f 55%,#2a72d5);color:#fff}
+    .header-inner{max-width:1000px;margin:0 auto;padding:20px 28px 14px;display:flex;align-items:center;gap:18px}
+    .header-logo{width:62px;height:62px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.18)}
+    .header-text h1{font-size:1.28rem;font-weight:800}
+    .header-text .sub1{font-size:.80rem;opacity:.82;margin-top:2px}
+    .header-text .sub2{font-size:.75rem;opacity:.65;margin-top:1px}
+    .header-badge{margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:6px 14px;font-size:.75rem;text-align:center;flex-shrink:0}
+    .header-badge strong{display:block;font-size:1rem}
+    .progress-wrap{max-width:1000px;margin:0 auto;padding:14px 28px 20px}
+    .steps{display:flex}
+    .step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+    .step:not(:last-child)::after{content:'';position:absolute;top:17px;left:calc(50% + 18px);right:calc(-50% + 18px);height:3px;background:rgba(255,255,255,0.25);z-index:0}
+    .step.done:not(:last-child)::after{background:rgba(255,255,255,0.75)}
+    .step-circle{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transition:all .3s}
+    .step.active .step-circle{background:#fff;color:var(--blue);border-color:#fff;box-shadow:0 0 0 4px rgba(255,255,255,0.25)}
+    .step.done .step-circle{background:var(--lgreen);border-color:var(--lgreen);color:#fff}
+    .step-label{font-size:.68rem;margin-top:5px;opacity:.75;text-align:center;color:#fff;line-height:1.3}
+    .step.active .step-label{opacity:1;font-weight:700}
+    .main{max-width:1000px;margin:24px auto 60px;padding:0 14px}
+    .card{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+    .card-header{padding:18px 28px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:13px}
+    .ch-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+    .chi-blue{background:#dbeafe}.chi-green{background:#dcfce7}.chi-orange{background:#fef3c7}.chi-red{background:#fee2e2}.chi-purple{background:#ede9fe}
+    .card-header h2{font-size:1.05rem;font-weight:800;color:var(--blue)}
+    .card-header p{font-size:.78rem;color:var(--muted);margin-top:2px}
+    .card-body{padding:24px 28px}
+    .section-page{display:none}
+    .section-page.active{display:block}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    .form-row.full{grid-template-columns:1fr}
+    .form-row.three{grid-template-columns:1fr 1fr 1fr}
+    @media(max-width:680px){.form-row,.form-row.three{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    .form-group label{font-size:.80rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:4px}
+    .req{color:var(--red)}
+    .form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.86rem;color:var(--text);background:var(--gray);transition:border-color .2s;font-family:inherit}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--lblue);background:#fff;box-shadow:0 0 0 3px rgba(42,114,213,0.10)}
+    .form-group input.error,.form-group select.error,.form-group textarea.error{border-color:var(--lred);background:#fff5f5}
+    .hint{font-size:.73rem;color:var(--muted)}
+    .errmsg{font-size:.73rem;color:var(--lred);display:none}
+    .errmsg.show{display:block}
+    textarea{resize:vertical;min-height:80px}
+    .dir-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .dir-tab{padding:7px 14px;border-radius:20px;font-size:.78rem;font-weight:700;cursor:pointer;border:2px solid var(--border);background:var(--gray);color:var(--muted);transition:all .2s;white-space:nowrap}
+    .dir-tab.active-tab{border-color:var(--blue);background:#dbeafe;color:var(--blue)}
+    .unit-panel{display:none}
+    .unit-panel.show{display:block}
+    .radio-group{display:flex;flex-wrap:wrap;gap:9px}
+    .radio-item{flex:1;min-width:110px}
+    .radio-item input[type=radio]{display:none}
+    .radio-item label{display:flex;align-items:center;gap:7px;padding:9px 12px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:.83rem;font-weight:600;transition:all .2s;background:var(--gray)}
+    .radio-item input[type=radio]:checked+label{border-color:var(--lblue);background:#dbeafe;color:var(--blue)}
+    .dot{width:17px;height:17px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .radio-item input[type=radio]:checked+label .dot{border-color:var(--lblue);background:var(--lblue)}
+    .radio-item input[type=radio]:checked+label .dot::after{content:'';width:7px;height:7px;background:#fff;border-radius:50%}
+    .infobox{border-radius:10px;padding:12px 15px;margin-bottom:18px;font-size:.82rem;display:flex;gap:10px;align-items:flex-start}
+    .infobox.blue{background:#dbeafe;border-left:4px solid var(--lblue);color:#1e3a8a}
+    .infobox.green{background:#dcfce7;border-left:4px solid var(--lgreen);color:#14532d}
+    .infobox.orange{background:#fef3c7;border-left:4px solid var(--lorange);color:#78350f}
+    .infobox.red{background:#fee2e2;border-left:4px solid var(--lred);color:#7f1d1d}
+    .ib-icon{font-size:1.15rem;flex-shrink:0;margin-top:1px}
+    hr.divider{border:none;border-top:1.5px dashed var(--border);margin:18px 0}
+    .sec-title{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .btn-row{display:flex;gap:11px;justify-content:flex-end;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}
+    .btn{padding:10px 22px;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:7px;font-family:inherit}
+    .btn-outline{background:#fff;border:2px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--lblue);color:var(--lblue)}
+    .btn-primary{background:linear-gradient(90deg,#0f2d5e,var(--lblue));color:#fff;box-shadow:0 2px 8px rgba(26,77,143,0.22)}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-success{background:linear-gradient(90deg,var(--green),var(--lgreen));color:#fff;box-shadow:0 2px 8px rgba(27,110,58,0.22)}
+    .btn-success:hover{opacity:.9;transform:translateY(-1px)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+    .approval-track{display:flex;margin:16px 0}
+    .atrack-item{flex:1;text-align:center;position:relative}
+    .atrack-item:not(:last-child)::after{content:'>';position:absolute;right:-8px;top:8px;color:var(--border);font-size:1.1rem;z-index:1}
+    .atrack-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;margin:0 auto 4px}
+    .atr-pending{background:#fef3c7;border:2px solid var(--lorange);color:var(--orange)}
+    .atr-active{background:#dbeafe;border:2px solid var(--lblue);color:var(--lblue)}
+    .atr-done{background:var(--lgreen);color:#fff}
+    .atrack-label{font-size:.66rem;color:var(--muted);line-height:1.3}
+    .level-box{background:#f8faff;border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+    .level-title{font-weight:800;font-size:.82rem;color:var(--blue);margin-bottom:11px;display:flex;align-items:center;gap:7px}
+    .review-table{width:100%;border-collapse:collapse;font-size:.84rem}
+    .review-table td{padding:8px 11px;border:1px solid var(--border);vertical-align:top}
+    .review-table tr:nth-child(even) td{background:var(--gray)}
+    .review-table td:first-child{font-weight:700;color:var(--muted);width:36%}
+    .rthead td{background:var(--blue)!important;color:#fff!important;font-size:.74rem;font-weight:800;letter-spacing:1px;padding:7px 11px!important}
+    #loading-overlay{display:none;position:fixed;inset:0;background:rgba(15,45,94,0.82);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    #loading-overlay.show{display:flex}
+    .spinner{width:52px;height:52px;border:5px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #loading-overlay p{color:#fff;font-weight:700;font-size:1rem}
+    #loading-overlay small{color:rgba(255,255,255,0.7);font-size:.80rem;text-align:center;max-width:320px}
+    #page-success{text-align:center;padding:44px 20px 50px}
+    .suc-icon{font-size:68px;animation:pop .4s ease}
+    @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+    #page-success h2{font-size:1.55rem;color:var(--green);margin:16px 0 10px}
+    #page-success p{color:var(--muted);max-width:480px;margin:0 auto 18px;line-height:1.65}
+    .ref-number{display:inline-block;background:#dcfce7;border:2px dashed var(--lgreen);border-radius:10px;padding:10px 28px;font-size:1.1rem;font-weight:800;color:var(--green);letter-spacing:2.5px;margin-bottom:22px}
+    .email-sent-box{background:#f8faff;border:1.5px solid var(--border);border-radius:12px;padding:18px 22px;max-width:560px;margin:0 auto 22px;text-align:left}
+    .email-sent-box .etitle{font-weight:800;color:var(--blue);margin-bottom:10px;font-size:.85rem}
+    .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+    .badge-b{background:#dbeafe;color:#1e3a8a}.badge-c{background:#dcfce7;color:#14532d}.badge-d{background:#fef9c3;color:#713f12}.badge-klinik{background:#fce7f3;color:#831843}.badge-ak{background:#ede9fe;color:#4c1d95}.badge-kp{background:#e0f2fe;color:#075985}.badge-pkmk{background:#fef3c7;color:#92400e}
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-logo">✞</div>
-  <div class="header-title">
-    <h1>YAKKUM – Human Resources Request Form</h1>
-    <p>Yayasan Kristen untuk Kesehatan Umum | Formulir Permintaan Sumber Daya Manusia</p>
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p>Memproses HR Request...</p>
+  <small id="loading-status">Menyimpan data ke Google Sheet dan mengirim email approval berjenjang...</small>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="header-logo">&#10011;</div>
+    <div class="header-text">
+      <h1>YAKKUM</h1>
+      <div class="sub1">Yayasan Kristen untuk Kesehatan Umum</div>
+      <div class="sub2">Human Resources Request Form &nbsp;&middot;&nbsp; Sistem Pengajuan Kebutuhan SDM</div>
+    </div>
+    <div class="header-badge"><strong>4</strong>Direktorat</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="steps">
+      <div class="step active" id="st1"><div class="step-circle">1</div><div class="step-label">Identitas<br>Pemohon</div></div>
+      <div class="step" id="st2"><div class="step-circle">2</div><div class="step-label">Unit &amp;<br>Direktorat</div></div>
+      <div class="step" id="st3"><div class="step-circle">3</div><div class="step-label">Detail<br>Permintaan</div></div>
+      <div class="step" id="st4"><div class="step-circle">4</div><div class="step-label">Justifikasi &amp;<br>Persetujuan</div></div>
+      <div class="step" id="st5"><div class="step-circle">5</div><div class="step-label">Review &amp;<br>Submit</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="main"><div class="card">
+
+<!-- PAGE 1 -->
+<div id="page1" class="section-page active">
+  <div class="card-header"><div class="ch-icon chi-blue">&#128100;</div><div><h2>Identitas Pemohon</h2><p>Data diri Anda selaku pengaju Human Resources Request</p></div></div>
+  <div class="card-body">
+    <div class="sec-title">Data Diri Pemohon</div>
+    <div class="form-row">
+      <div class="form-group"><label>Nama Lengkap &amp; Gelar <span class="req">*</span></label><input type="text" id="p-nama" placeholder="cth: dr. Budi Setiawan, Sp.PD"/><span class="errmsg" id="err-p-nama">Nama wajib diisi</span></div>
+      <div class="form-group"><label>NIK / No. Induk Pegawai <span class="req">*</span></label><input type="text" id="p-nik" placeholder="cth: RSB-2019-0128"/><span class="errmsg" id="err-p-nik">NIK wajib diisi</span></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Jabatan / Posisi Saat Ini <span class="req">*</span></label><input type="text" id="p-jabatan" placeholder="cth: Kepala Instalasi Rawat Inap"/><span class="errmsg" id="err-p-jabatan">Jabatan wajib diisi</span></div>
+      <div class="form-group"><label>Email Pemohon <span class="req">*</span></label><input type="email" id="p-email" placeholder="cth: budi@rsbethesda.org"/><span class="errmsg" id="err-p-email">Format email tidak valid</span></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>No. Telepon / WhatsApp <span class="req">*</span></label><input type="tel" id="p-telp" placeholder="cth: 08123456789"/><span class="errmsg" id="err-p-telp">No. telepon wajib diisi</span></div>
+      <div class="form-group"><label>Tanggal Pengajuan</label><input type="date" id="p-tgl"/></div>
+    </div>
+    <div class="form-row full"><div class="form-group"><label>No. Surat Pengajuan <span class="hint">(jika ada)</span></label><input type="text" id="p-nosurat" placeholder="cth: 045/HRD/RSB/II/2025"/></div></div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="goPage(2)">Lanjut &#8250;</button></div>
   </div>
 </div>
 
-<div class="container">
-
-  <!-- STEP INDICATOR -->
-  <div class="steps" id="stepIndicator">
-    <div class="step active" id="si1"><div class="step-circle">1</div><div class="step-label">Identitas Pemohon</div></div>
-    <div class="step" id="si2"><div class="step-circle">2</div><div class="step-label">Direktorat & Unit</div></div>
-    <div class="step" id="si3"><div class="step-circle">3</div><div class="step-label">Detail Permintaan</div></div>
-    <div class="step" id="si4"><div class="step-circle">4</div><div class="step-label">Justifikasi & Persetujuan</div></div>
-    <div class="step" id="si5"><div class="step-circle">5</div><div class="step-label">Review & Submit</div></div>
-  </div>
-
-  <!-- ==================== PAGE 1 ==================== -->
-  <div id="page1">
-    <div class="card">
-      <div class="card-title">👤 Halaman 1 — Identitas Pemohon</div>
-      <div class="ref-badge" id="refBadge">Memuat nomor referensi...</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Nama Lengkap <span class="req">*</span></label>
-          <input type="text" id="namaPemohon" placeholder="Nama lengkap sesuai data pegawai"/>
-        </div>
-        <div class="form-group">
-          <label>NIP / Nomor Pegawai <span class="req">*</span></label>
-          <input type="text" id="nip" placeholder="NIP atau Nomor Pegawai"/>
-        </div>
-        <div class="form-group">
-          <label>Jabatan Saat Ini <span class="req">*</span></label>
-          <input type="text" id="jabatan" placeholder="Jabatan/posisi pemohon saat ini"/>
-        </div>
-        <div class="form-group">
-          <label>Email Resmi <span class="req">*</span></label>
-          <input type="email" id="emailPemohon" placeholder="email@yakkum.or.id"/>
-        </div>
-        <div class="form-group">
-          <label>Nomor Telepon / WA <span class="req">*</span></label>
-          <input type="text" id="telepon" placeholder="08xx-xxxx-xxxx"/>
-        </div>
-        <div class="form-group">
-          <label>Tanggal Pengajuan</label>
-          <input type="date" id="tanggalPengajuan" readonly/>
-        </div>
-      </div>
+<!-- PAGE 2 -->
+<div id="page2" class="section-page">
+  <div class="card-header"><div class="ch-icon chi-purple">&#127970;</div><div><h2>Direktorat &amp; Unit Kerja</h2><p>Pilih direktorat dan unit/satuan kerja tempat Anda bertugas</p></div></div>
+  <div class="card-body">
+    <div class="sec-title">Pilih Direktorat</div>
+    <div class="dir-tabs">
+      <div class="dir-tab active-tab" onclick="switchDir('dpk',this)">&#127973; DPK</div>
+      <div class="dir-tab" onclick="switchDir('akademik',this)">&#127891; Akademik</div>
+      <div class="dir-tab" onclick="switchDir('kp',this)">&#127963; Kantor Pusat</div>
+      <div class="dir-tab" onclick="switchDir('pkmk',this)">&#127807; PKMK</div>
     </div>
-    <div class="error-msg" id="err1">⚠️ Harap lengkapi semua field yang bertanda *</div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="goTo(2)">Lanjut →</button>
-    </div>
-  </div>
-
-  <!-- ==================== PAGE 2 ==================== -->
-  <div id="page2" style="display:none">
-    <div class="card">
-      <div class="card-title">🏥 Halaman 2 — Direktorat & Unit Kerja</div>
-      <div class="form-group" style="margin-bottom:20px">
-        <label>Pilih Direktorat <span class="req">*</span></label>
-        <div class="dir-tabs">
-          <div class="dir-tab" onclick="switchDir('dpk')">🏥 DPK</div>
-          <div class="dir-tab" onclick="switchDir('akademik')">🎓 Akademik</div>
-          <div class="dir-tab" onclick="switchDir('kanpus')">🏢 Kantor Pusat</div>
-          <div class="dir-tab" onclick="switchDir('pkmk')">🌿 PKMK</div>
-        </div>
-      </div>
-
-      <!-- DPK -->
-      <div class="dir-panel" id="panel-dpk">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Unit Rumah Sakit <span class="req">*</span></label>
-            <select id="unit-dpk">
-              <option value="">-- Pilih Unit --</option>
-              <optgroup label="Rumah Sakit Tipe B">
-                <option value="RSB Bethesda Yogyakarta">RSB – RS Bethesda Yogyakarta (Tipe B)</option>
-              </optgroup>
-              <optgroup label="Rumah Sakit Tipe C">
-                <option value="RSE – RS Elim Rantepao">RSE – RS Elim Rantepao (Tipe C)</option>
-                <option value="RSKNW – RS Kristen Ngesti Waluyo">RSKNW – RS Kristen Ngesti Waluyo (Tipe C)</option>
-                <option value="RSMW – RS Mardi Waluyo">RSMW – RS Mardi Waluyo (Tipe C)</option>
-                <option value="RSPR – RS Panti Rapih">RSPR – RS Panti Rapih (Tipe C)</option>
-                <option value="RSPWS – RS Panti Wilasa Semarang">RSPWS – RS Panti Wilasa Semarang (Tipe C)</option>
-                <option value="RSPWC – RS Panti Wilasa Citarum">RSPWC – RS Panti Wilasa Citarum (Tipe C)</option>
-                <option value="RSPWDC – RS Panti Wilasa Dr. Cipto">RSPWDC – RS Panti Wilasa Dr. Cipto (Tipe C)</option>
-              </optgroup>
-              <optgroup label="Rumah Sakit Tipe D">
-                <option value="RSBL – RS Bethesda Lempuyangwangi">RSBL – RS Bethesda Lempuyangwangi (Tipe D)</option>
-                <option value="RSBW – RS Bethesda Wonosari">RSBW – RS Bethesda Wonosari (Tipe D)</option>
-                <option value="RSPWP – RS Panti Wilasa Purwodadi">RSPWP – RS Panti Wilasa Purwodadi (Tipe D)</option>
-                <option value="RSSK – RS Sinai Kendari">RSSK – RS Sinai Kendari (Tipe D)</option>
-              </optgroup>
-              <optgroup label="Klinik">
-                <option value="KYD – Klinik YAKKUM Depok">KYD – Klinik YAKKUM Depok</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Departemen / Bagian <span class="req">*</span></label>
-            <input type="text" id="dept-dpk" placeholder="cth: IGD, ICU, Radiologi, HRD..."/>
-          </div>
-        </div>
-      </div>
-
-      <!-- AKADEMIK -->
-      <div class="dir-panel" id="panel-akademik">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Kampus STIKES Bethesda <span class="req">*</span></label>
-            <select id="unit-akademik">
-              <option value="">-- Pilih Kampus --</option>
-              <option value="STB YOG – Kampus Utama Yogyakarta">STB YOG – Kampus Utama Yogyakarta</option>
-              <option value="STB SMG – PSDKU Semarang">STB SMG – PSDKU Semarang</option>
-              <option value="STB PRK – PSDKU Temanggung">STB PRK – PSDKU Temanggung</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Program Studi / Bagian <span class="req">*</span></label>
-            <input type="text" id="dept-akademik" placeholder="cth: Keperawatan, Kebidanan, Administrasi..."/>
-          </div>
-        </div>
-      </div>
-
-      <!-- KANTOR PUSAT -->
-      <div class="dir-panel" id="panel-kanpus">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Divisi Kantor Pusat <span class="req">*</span></label>
-            <select id="unit-kanpus">
-              <option value="">-- Pilih Divisi --</option>
-              <option value="Direktorat Eksekutif">Direktorat Eksekutif</option>
-              <option value="Divisi Human Resources">Divisi Human Resources</option>
-              <option value="Divisi Keuangan & Akuntansi">Divisi Keuangan & Akuntansi</option>
-              <option value="Divisi Hukum & Kepatuhan">Divisi Hukum & Kepatuhan</option>
-              <option value="Divisi IT & Sistem Informasi">Divisi IT & Sistem Informasi</option>
-              <option value="Divisi Komunikasi & Humas">Divisi Komunikasi & Humas</option>
-              <option value="Divisi Perencanaan & Pengembangan">Divisi Perencanaan & Pengembangan</option>
-              <option value="Divisi Pengadaan & Logistik">Divisi Pengadaan & Logistik</option>
-              <option value="Sekretariat Yayasan">Sekretariat Yayasan</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Sub-Bagian / Tim <span class="req">*</span></label>
-            <input type="text" id="dept-kanpus" placeholder="cth: Rekrutmen, Payroll, Anggaran..."/>
-          </div>
-        </div>
-      </div>
-
-      <!-- PKMK -->
-      <div class="dir-panel" id="panel-pkmk">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Unit PKMK <span class="req">*</span></label>
-            <select id="unit-pkmk">
-              <option value="">-- Pilih Unit --</option>
-              <option value="CDB – CD Bethesda">CDB – CD Bethesda</option>
-              <option value="PRY – Pusat Rehabilitasi YAKKUM">PRY – Pusat Rehabilitasi YAKKUM</option>
-              <option value="YEU – YAKKUM Emergency Unit">YEU – YAKKUM Emergency Unit</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Program / Bagian <span class="req">*</span></label>
-            <input type="text" id="dept-pkmk" placeholder="cth: Program Komunitas, Rehabilitasi, Tanggap Darurat..."/>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <div class="error-msg" id="err2">⚠️ Harap pilih direktorat, unit, dan isi departemen</div>
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goTo(1)">← Kembali</button>
-      <button class="btn btn-primary" onclick="goTo(3)">Lanjut →</button>
-    </div>
-  </div>
-
-  <!-- ==================== PAGE 3 ==================== -->
-  <div id="page3" style="display:none">
-    <div class="card">
-      <div class="card-title">📋 Halaman 3 — Detail Permintaan HR</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Posisi / Jabatan yang Diminta <span class="req">*</span></label>
-          <input type="text" id="posisi" placeholder="cth: Perawat ICU, Dokter Umum, Staf HRD..."/>
-        </div>
-        <div class="form-group">
-          <label>Jenis Permintaan <span class="req">*</span></label>
-          <select id="jenisPermintaan">
-            <option value="">-- Pilih Jenis --</option>
-            <option>Rekrutmen Baru</option>
-            <option>Penggantian Pegawai</option>
-            <option>Promosi Internal</option>
-            <option>Mutasi / Rotasi</option>
-            <option>Kontrak Sementara</option>
-            <option>Tenaga Magang</option>
+    <input type="hidden" id="sel-direktorat" value="DPK"/>
+    <div class="unit-panel show" id="panel-dpk">
+      <div class="infobox blue"><span class="ib-icon">&#127973;</span><div><b>Direktorat Pelayanan Kesehatan (DPK)</b> &mdash; 1 RS Tipe B, 8 RS Tipe C, 4 RS Tipe D, 1 Klinik.</div></div>
+      <div class="form-row">
+        <div class="form-group"><label>Pilih Unit <span class="req">*</span></label>
+          <select id="dpk-unit" onchange="onDpkUnit()">
+            <option value="">-- Pilih Unit --</option>
+            <optgroup label="Tipe B"><option value="RSB|Rumah Sakit Bethesda|Tipe B">Rumah Sakit Bethesda (RSB)</option></optgroup>
+            <optgroup label="Tipe C">
+              <option value="RSE|Rumah Sakit Emanuel|Tipe C">Rumah Sakit Emanuel (RSE)</option>
+              <option value="RSKNW|RS Kristen Ngesti Waluyo|Tipe C">RS Kristen Ngesti Waluyo (RSKNW)</option>
+              <option value="RSMW|Rumah Sakit Mardi Waluyo|Tipe C">Rumah Sakit Mardi Waluyo (RSMW)</option>
+              <option value="RSPR|Rumah Sakit Panti Rahayu|Tipe C">Rumah Sakit Panti Rahayu (RSPR)</option>
+              <option value="RSPWS|RS Panti Waluyo Surakarta|Tipe C">RS Panti Waluyo Surakarta (RSPWS)</option>
+              <option value="RSPWC|RS Panti Wilasa Citarum|Tipe C">RS Panti Wilasa Citarum (RSPWC)</option>
+              <option value="RSPWDC|RS Panti Wilasa dr. Cipto|Tipe C">RS Panti Wilasa dr. Cipto (RSPWDC)</option>
+            </optgroup>
+            <optgroup label="Tipe D">
+              <option value="RSBL|RS Bethesda Lempuyangwangi|Tipe D">RS Bethesda Lempuyangwangi (RSBL)</option>
+              <option value="RSBW|RS Bethesda Wonosari|Tipe D">RS Bethesda Wonosari (RSBW)</option>
+              <option value="RSPWP|RS Panti Waluyo Purworejo|Tipe D">RS Panti Waluyo Purworejo (RSPWP)</option>
+              <option value="RSSK|Rumah Sakit Sinar Kasih|Tipe D">Rumah Sakit Sinar Kasih (RSSK)</option>
+            </optgroup>
+            <optgroup label="Klinik"><option value="KYD|Klinik Yoga Darma|Klinik">Klinik Yoga Darma (KYD)</option></optgroup>
           </select>
+          <span class="errmsg" id="err-dpk-unit">Pilih unit</span>
         </div>
-        <div class="form-group">
-          <label>Jumlah SDM yang Diminta <span class="req">*</span></label>
-          <input type="number" id="jumlah" min="1" placeholder="Jumlah orang"/>
-        </div>
-        <div class="form-group">
-          <label>Klasifikasi Posisi <span class="req">*</span></label>
-          <select id="klasifikasi">
-            <option value="">-- Pilih Klasifikasi --</option>
-            <option>Manajerial / Struktural</option>
-            <option>Fungsional Medis</option>
-            <option>Fungsional Keperawatan</option>
-            <option>Fungsional Penunjang Medis</option>
-            <option>Administrasi & Umum</option>
-            <option>Teknis & IT</option>
-            <option>Akademik / Pengajar</option>
+        <div class="form-group" id="dpk-tipe-wrap" style="display:none"><label>Tipe Fasilitas</label><input type="text" id="dpk-tipe" readonly style="background:#f0f4ff;font-weight:700;color:var(--blue)"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Departemen / Instalasi <span class="req">*</span></label>
+          <select id="dpk-dept">
+            <option value="">-- Pilih Departemen --</option>
+            <option value="IGD">Instalasi Gawat Darurat (IGD)</option>
+            <option value="Rawat Inap">Instalasi Rawat Inap</option>
+            <option value="Rawat Jalan / Poliklinik">Instalasi Rawat Jalan / Poliklinik</option>
+            <option value="ICU / ICCU">ICU / ICCU</option>
+            <option value="Bedah Sentral (IBS)">Instalasi Bedah Sentral (IBS)</option>
+            <option value="Farmasi">Instalasi Farmasi</option>
+            <option value="Laboratorium">Instalasi Laboratorium</option>
+            <option value="Radiologi">Instalasi Radiologi</option>
+            <option value="SDM / HRD">SDM / Human Resources</option>
+            <option value="Keuangan &amp; Akuntansi">Keuangan &amp; Akuntansi</option>
+            <option value="Sistem Informasi / IT">Sistem Informasi / IT</option>
+            <option value="Lainnya">Lainnya</option>
           </select>
+          <span class="errmsg" id="err-dpk-dept">Pilih departemen</span>
         </div>
-        <div class="form-group">
-          <label>Pendidikan Minimal <span class="req">*</span></label>
-          <select id="pendidikan">
-            <option value="">-- Pilih --</option>
-            <option>SMA / SMK Sederajat</option>
-            <option>D3 (Diploma 3)</option>
-            <option>D4 / S1</option>
-            <option>S2 (Magister)</option>
-            <option>S3 (Doktor)</option>
-            <option>Profesi (Ners, Dokter, Apoteker, dll)</option>
-          </select>
+        <div class="form-group"><label>Sub-Departemen <span class="hint">(opsional)</span></label><input type="text" id="dpk-subdept" placeholder="cth: Ruang Dahlia / ICU Lantai 3"/></div>
+      </div>
+    </div>
+    <div class="unit-panel" id="panel-akademik">
+      <div class="form-row">
+        <div class="form-group"><label>Pilih Kampus <span class="req">*</span></label>
+          <select id="ak-unit"><option value="">-- Pilih Kampus --</option><option value="STB-YOG|STIKES Bethesda Yogyakarta|Kampus Utama">STIKES Bethesda Yogyakarta &mdash; Kampus Utama</option><option value="STB-SMG|STIKES Bethesda PSDKU Semarang|PSDKU Semarang">STIKES Bethesda &mdash; PSDKU Semarang</option><option value="STB-PRK|STIKES Bethesda PSDKU Temanggung|PSDKU Temanggung">STIKES Bethesda &mdash; PSDKU Temanggung</option></select>
+          <span class="errmsg" id="err-ak-unit">Pilih kampus</span>
         </div>
-        <div class="form-group">
-          <label>Pengalaman Minimal</label>
-          <select id="pengalaman">
-            <option value="">-- Pilih --</option>
-            <option>Fresh Graduate (0 tahun)</option>
-            <option>1 – 2 tahun</option>
-            <option>3 – 5 tahun</option>
-            <option>5 – 10 tahun</option>
-            <option>Lebih dari 10 tahun</option>
-          </select>
-        </div>
-        <div class="form-group span2">
-          <label>Kompetensi / Keahlian Khusus yang Diperlukan</label>
-          <textarea id="kompetensi" placeholder="cth: Sertifikat BTCLS, kemampuan bahasa Inggris, pengalaman ICU, dll..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>Target Mulai Bekerja <span class="req">*</span></label>
-          <input type="date" id="targetMulai"/>
-        </div>
-        <div class="form-group">
-          <label>Jenis Hubungan Kerja <span class="req">*</span></label>
-          <select id="hubunganKerja">
-            <option value="">-- Pilih --</option>
-            <option>Pegawai Tetap (PKWTT)</option>
-            <option>Pegawai Kontrak (PKWT)</option>
-            <option>Paruh Waktu</option>
-            <option>Magang / Internship</option>
-          </select>
+        <div class="form-group"><label>Program Studi / Bagian <span class="req">*</span></label>
+          <select id="ak-dept"><option value="">-- Pilih Prodi / Bagian --</option><option value="Prodi Keperawatan (S1)">Prodi Keperawatan (S1)</option><option value="Prodi Keperawatan (D3)">Prodi Keperawatan (D3)</option><option value="Prodi Kebidanan (D3)">Prodi Kebidanan (D3)</option><option value="Bagian SDM &amp; Umum">Bagian SDM &amp; Umum</option><option value="Lainnya">Lainnya</option></select>
+          <span class="errmsg" id="err-ak-dept">Pilih prodi/bagian</span>
         </div>
       </div>
     </div>
-    <div class="error-msg" id="err3">⚠️ Harap lengkapi semua field yang bertanda *</div>
+    <div class="unit-panel" id="panel-kp">
+      <div class="form-row">
+        <div class="form-group"><label>Divisi / Bagian <span class="req">*</span></label>
+          <select id="kp-dept"><option value="">-- Pilih Divisi / Bagian --</option><option value="Direksi &amp; Sekretariat">Direksi &amp; Sekretariat Yayasan</option><option value="Divisi Human Resources">Divisi Human Resources</option><option value="Divisi Keuangan &amp; Akuntansi">Divisi Keuangan &amp; Akuntansi</option><option value="Divisi IT &amp; Sistem Informasi">Divisi IT &amp; Sistem Informasi</option><option value="Lainnya">Lainnya</option></select>
+          <span class="errmsg" id="err-kp-dept">Pilih divisi/bagian</span>
+        </div>
+        <div class="form-group"><label>Sub-Bagian <span class="hint">(opsional)</span></label><input type="text" id="kp-subdept" placeholder="cth: Sub-Bagian Rekrutmen"/></div>
+      </div>
+    </div>
+    <div class="unit-panel" id="panel-pkmk">
+      <div class="form-row">
+        <div class="form-group"><label>Pilih Unit PKMK <span class="req">*</span></label>
+          <select id="pkmk-unit"><option value="">-- Pilih Unit --</option><option value="CDB|CD Bethesda|PKMK">CD Bethesda (CDB)</option><option value="PRY|Pusat Rehabilitasi YAKKUM|PKMK">Pusat Rehabilitasi YAKKUM (PRY)</option><option value="YEU|YAKKUM Emergency Unit|PKMK">YAKKUM Emergency Unit (YEU)</option></select>
+          <span class="errmsg" id="err-pkmk-unit">Pilih unit PKMK</span>
+        </div>
+        <div class="form-group"><label>Bagian / Program <span class="req">*</span></label>
+          <select id="pkmk-dept"><option value="">-- Pilih Bagian --</option><option value="Program Pemberdayaan Masyarakat">Program Pemberdayaan Masyarakat</option><option value="Program Rehabilitasi Fisik">Program Rehabilitasi Fisik</option><option value="Program Tanggap Bencana">Program Tanggap Bencana</option><option value="Administrasi &amp; Keuangan">Administrasi &amp; Keuangan</option><option value="Lainnya">Lainnya</option></select>
+          <span class="errmsg" id="err-pkmk-dept">Pilih bagian/program</span>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="goPage(1)">&#8249; Kembali</button><button class="btn btn-primary" onclick="goPage(3)">Lanjut &#8250;</button></div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div id="page3" class="section-page">
+  <div class="card-header"><div class="ch-icon chi-orange">&#128203;</div><div><h2>Detail Permintaan Human Resources</h2><p>Spesifikasi posisi dan kualifikasi SDM yang dibutuhkan</p></div></div>
+  <div class="card-body">
+    <div class="form-row full">
+      <div class="form-group"><label>Jenis Permintaan <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-item"><input type="radio" name="jenis" id="j1" value="Tenaga Baru (Formasi Baru)"/><label for="j1"><div class="dot"></div>&#128338; Tenaga Baru</label></div>
+          <div class="radio-item"><input type="radio" name="jenis" id="j2" value="Penggantian (Replacement)"/><label for="j2"><div class="dot"></div>&#128260; Penggantian</label></div>
+          <div class="radio-item"><input type="radio" name="jenis" id="j3" value="Perpanjangan Kontrak"/><label for="j3"><div class="dot"></div>&#128257; Perpanjang Kontrak</label></div>
+          <div class="radio-item"><input type="radio" name="jenis" id="j4" value="Tenaga Tambahan (Beban Kerja)"/><label for="j4"><div class="dot"></div>&#128200; Tenaga Tambahan</label></div>
+        </div>
+        <span class="errmsg" id="err-jenis">Pilih jenis permintaan</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Nama / Judul Posisi <span class="req">*</span></label><input type="text" id="d-posisi" placeholder="cth: Perawat Pelaksana / Dokter Umum"/><span class="errmsg" id="err-d-posisi">Posisi wajib diisi</span></div>
+      <div class="form-group"><label>Klasifikasi Tenaga <span class="req">*</span></label>
+        <select id="d-klasifikasi">
+          <option value="">-- Pilih Klasifikasi --</option>
+          <optgroup label="Tenaga Medis"><option value="Dokter Umum">Dokter Umum</option><option value="Dokter Spesialis">Dokter Spesialis</option><option value="Dokter Gigi">Dokter Gigi</option></optgroup>
+          <optgroup label="Tenaga Keperawatan"><option value="Perawat (Ners / S1)">Perawat &mdash; Ners / S1</option><option value="Perawat (D3)">Perawat &mdash; D3</option><option value="Bidan">Bidan</option></optgroup>
+          <optgroup label="Tenaga Kesehatan Lainnya"><option value="Analis Kesehatan / Laboran">Analis Kesehatan / Laboran</option><option value="Radiografer">Radiografer</option><option value="Fisioterapis">Fisioterapis</option><option value="Ahli Gizi / Dietisien">Ahli Gizi / Dietisien</option><option value="Apoteker">Apoteker</option><option value="Psikolog Klinis">Psikolog Klinis</option></optgroup>
+          <optgroup label="Tenaga Non-Kesehatan / Penunjang"><option value="Staf Administrasi">Staf Administrasi</option><option value="Staf Keuangan / Akuntan">Staf Keuangan / Akuntan</option><option value="Staf IT / Programmer">Staf IT / Programmer</option><option value="Staf Human Resources">Staf Human Resources</option><option value="Security / Satpam">Security / Satpam</option><option value="Lainnya">Lainnya</option></optgroup>
+        </select>
+        <span class="errmsg" id="err-d-klasifikasi">Pilih klasifikasi</span>
+      </div>
+    </div>
+    <div class="form-row three">
+      <div class="form-group"><label>Status Kepegawaian <span class="req">*</span></label>
+        <select id="d-status"><option value="">-- Pilih Status --</option><option value="Karyawan Tetap (PKWTT)">Karyawan Tetap (PKWTT)</option><option value="Kontrak (PKWT)">Kontrak / PKWT</option><option value="Magang / Internship">Magang / Internship</option><option value="Part Time">Part Time</option><option value="Dokter Mitra / Visiting">Dokter Mitra / Visiting</option></select>
+        <span class="errmsg" id="err-d-status">Pilih status kepegawaian</span>
+      </div>
+      <div class="form-group"><label>Jumlah SDM Dibutuhkan <span class="req">*</span></label><input type="number" id="d-jumlah" min="1" max="100" placeholder="cth: 3"/><span class="errmsg" id="err-d-jumlah">Isi jumlah (min. 1)</span></div>
+      <div class="form-group"><label>Target Tanggal Mulai <span class="req">*</span></label><input type="date" id="d-tglmulai"/><span class="errmsg" id="err-d-tglmulai">Tanggal wajib diisi</span></div>
+    </div>
+    <hr class="divider"/>
+    <div class="sec-title">Kualifikasi Minimum</div>
+    <div class="form-row">
+      <div class="form-group"><label>Pendidikan Minimum <span class="req">*</span></label>
+        <select id="d-pendidikan"><option value="">-- Pilih Pendidikan --</option><option value="SMA / SMK">SMA / SMK Sederajat</option><option value="D3 (Diploma Tiga)">D3 (Diploma Tiga)</option><option value="D4 / S1">D4 / S1</option><option value="Profesi (Ners/Apoteker/dll)">Profesi (Ners / Apoteker / Dokter)</option><option value="S2 / Spesialis">S2 / Spesialis</option></select>
+        <span class="errmsg" id="err-d-pendidikan">Pilih pendidikan minimum</span>
+      </div>
+      <div class="form-group"><label>Pengalaman Kerja Minimum</label>
+        <select id="d-pengalaman"><option value="Fresh Graduate (0 tahun)">Fresh Graduate (0 tahun)</option><option value="Minimal 1 tahun">Minimal 1 tahun</option><option value="Minimal 2 tahun">Minimal 2 tahun</option><option value="Minimal 3 tahun">Minimal 3 tahun</option><option value="Minimal 5 tahun">Minimal 5 tahun</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Sertifikasi / Kompetensi Khusus</label><input type="text" id="d-sertif" placeholder="cth: STR aktif, SIP, ACLS, BTCLS"/></div>
+      <div class="form-group"><label>Shift / Pola Kerja</label>
+        <select id="d-shift"><option value="Non-Shift (Jam Kantor)">Non-Shift (Jam Kantor)</option><option value="Shift 3 (Pagi, Sore, Malam)">Shift 3 (Pagi, Sore, Malam)</option><option value="Shift 2 (Pagi &amp; Sore)">Shift 2 (Pagi &amp; Sore)</option><option value="On Call">On Call</option></select>
+      </div>
+    </div>
+    <div class="form-row full"><div class="form-group"><label>Keterangan Tambahan</label><textarea id="d-ket" rows="2" placeholder="Persyaratan khusus lainnya..."></textarea></div></div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="goPage(2)">&#8249; Kembali</button><button class="btn btn-primary" onclick="goPage(4)">Lanjut &#8250;</button></div>
+  </div>
+</div>
+
+<!-- PAGE 4 -->
+<div id="page4" class="section-page">
+  <div class="card-header"><div class="ch-icon chi-green">&#9989;</div><div><h2>Justifikasi &amp; Rantai Persetujuan</h2><p>Alasan permintaan SDM dan data atasan penerima email</p></div></div>
+  <div class="card-body">
+    <div class="form-row full">
+      <div class="form-group"><label>Alasan / Justifikasi Permintaan <span class="req">*</span></label><textarea id="j-alasan" rows="4" placeholder="Jelaskan kondisi beban kerja, rasio tenaga, kebutuhan layanan baru, regulasi yang mendasari, dll..."></textarea><span class="errmsg" id="err-j-alasan">Justifikasi wajib diisi (min. 20 karakter)</span></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group"><label>Dampak Jika Tidak Dipenuhi</label><textarea id="j-dampak" rows="2" placeholder="cth: Risiko overload, potensi medical error, akreditasi terganggu..."></textarea></div>
+    </div>
+    <hr class="divider"/>
+    <div class="sec-title">Rantai Persetujuan (Approval Chain)</div>
+    <div class="infobox orange">
+      <span class="ib-icon">&#128231;</span>
+      <div>Setelah submit, email berisi tombol <b style="color:#1b6e3a">&#9989; SETUJU</b> dan <b style="color:#b91c1c">&#10060; TOLAK</b> akan dikirim berjenjang. Setiap keputusan <b>tercatat otomatis di Google Sheet</b>. Level berikutnya hanya mendapat email setelah level sebelumnya <b>menyetujui</b>.</div>
+    </div>
+    <div class="approval-track">
+      <div class="atrack-item"><div class="atrack-dot atr-done">&#10004;</div><div class="atrack-label">Submit</div></div>
+      <div class="atrack-item"><div class="atrack-dot atr-active">1</div><div class="atrack-label">Atasan<br>Langsung</div></div>
+      <div class="atrack-item"><div class="atrack-dot atr-pending">2</div><div class="atrack-label">Kepala Unit /<br>Manajer</div></div>
+      <div class="atrack-item"><div class="atrack-dot atr-pending">3</div><div class="atrack-label">HR Kantor<br>Pusat</div></div>
+      <div class="atrack-item"><div class="atrack-dot atr-pending">4</div><div class="atrack-label">Direktur<br>Unit/RS</div></div>
+      <div class="atrack-item"><div class="atrack-dot atr-pending">5</div><div class="atrack-label">Direktur<br>YAKKUM</div></div>
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">&#128100; Level 1 &mdash; Atasan Langsung <span class="req">*</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nama <span class="req">*</span></label><input type="text" id="a1-nama" placeholder="cth: Ns. Sari Dewi, S.Kep"/><span class="errmsg" id="err-a1-nama">Nama wajib diisi</span></div>
+        <div class="form-group"><label>Jabatan <span class="req">*</span></label><input type="text" id="a1-jbt" placeholder="cth: Kepala Bidang Keperawatan"/><span class="errmsg" id="err-a1-jbt">Jabatan wajib diisi</span></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email <span class="req">*</span> <span class="hint">(Gmail, Yahoo, dll &mdash; semua bisa)</span></label><input type="email" id="a1-email" placeholder="Email atasan langsung"/><span class="errmsg" id="err-a1-email">Email tidak valid</span></div>
+        <div class="form-group"><label>No. HP / WhatsApp</label><input type="tel" id="a1-telp" placeholder="cth: 082111122233"/></div>
+      </div>
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">&#128101; Level 2 &mdash; Kepala Unit / Manajer <span class="hint" style="font-weight:400;font-size:.75rem">(opsional &mdash; kosongkan jika tidak ada)</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nama</label><input type="text" id="a2-nama" placeholder="cth: dr. Ahmad Fauzi, MARS"/></div>
+        <div class="form-group"><label>Jabatan</label><input type="text" id="a2-jbt" placeholder="cth: Manajer Pelayanan Medis"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email <span class="hint">(Gmail, Yahoo, dll)</span></label><input type="email" id="a2-email" placeholder="Email kepala unit (kosongkan jika tidak ada)"/></div>
+        <div class="form-group"><label>No. HP / WhatsApp</label><input type="tel" id="a2-telp"/></div>
+      </div>
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">&#127963; Level 3 &mdash; HR Kantor Pusat YAKKUM <span class="req">*</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nama <span class="req">*</span></label><input type="text" id="a3-nama" placeholder="cth: Rina Agustin, S.Psi., M.M."/><span class="errmsg" id="err-a3-nama">Nama HR wajib diisi</span></div>
+        <div class="form-group"><label>Jabatan</label><input type="text" id="a3-jbt" placeholder="cth: Kepala Divisi HR YAKKUM"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email HR <span class="req">*</span></label><input type="email" id="a3-email" placeholder="cth: hr@yakkum.or.id"/><span class="errmsg" id="err-a3-email">Email HR tidak valid</span></div>
+        <div class="form-group"><label>No. HP / WhatsApp</label><input type="tel" id="a3-telp"/></div>
+      </div>
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">&#127973; Level 4 &mdash; Direktur Unit / Rumah Sakit <span class="hint" style="font-weight:400;font-size:.75rem">(opsional)</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nama Direktur</label><input type="text" id="a4-nama" placeholder="cth: dr. Hendra Kusuma, Sp.OG"/></div>
+        <div class="form-group"><label>Email Direktur</label><input type="email" id="a4-email" placeholder="Email direktur unit"/></div>
+      </div>
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">&#11088; Level 5 &mdash; Direktur YAKKUM <span class="hint" style="font-weight:400;font-size:.75rem">(opsional)</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>Nama Direktur YAKKUM</label><input type="text" id="a5-nama" placeholder="cth: Pdt. Daniel Prasetyo, M.Div., M.M."/></div>
+        <div class="form-group"><label>Email Direktur YAKKUM</label><input type="email" id="a5-email" placeholder="cth: direktur@yakkum.or.id"/></div>
+      </div>
+    </div>
+
+    <div class="btn-row"><button class="btn btn-outline" onclick="goPage(3)">&#8249; Kembali</button><button class="btn btn-primary" onclick="goPage(5)">Lanjut ke Review &#8250;</button></div>
+  </div>
+</div>
+
+<!-- PAGE 5 -->
+<div id="page5" class="section-page">
+  <div class="card-header"><div class="ch-icon chi-red">&#128269;</div><div><h2>Review &amp; Submit</h2><p>Periksa seluruh data sebelum mengirimkan HR Request</p></div></div>
+  <div class="card-body">
+    <div class="infobox green"><span class="ib-icon">&#9989;</span><div>Pastikan semua data sudah benar. Setelah Submit: <b>(1)</b> data tersimpan di Google Sheet, <b>(2)</b> email berisi tombol <b>Setuju / Tolak</b> dikirim ke Atasan Level 1, <b>(3)</b> proses berjenjang otomatis.</div></div>
+    <div class="sec-title">Ringkasan HR Request</div>
+    <table class="review-table"><tbody id="rtbody"></tbody></table>
+    <hr class="divider"/>
+    <div class="infobox red"><span class="ib-icon">&#9888;&#65039;</span><div style="font-size:.79rem">Dengan menekan <b>Submit</b>, Anda menyatakan bahwa seluruh data yang diisi adalah <b>benar dan dapat dipertanggungjawabkan</b> sesuai peraturan kepegawaian YAKKUM.</div></div>
+    <div class="form-row" style="margin-top:16px">
+      <div class="form-group"><label>Tanda Tangan Digital <span class="req">*</span></label><input type="text" id="ttd" placeholder="Ketik nama lengkap Anda sebagai tanda tangan digital..."/><span class="errmsg" id="err-ttd">Tanda tangan wajib diisi</span></div>
+      <div class="form-group" style="justify-content:flex-end">
+        <label style="align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="chk-agree" style="width:16px;height:16px;margin-top:2px;flex-shrink:0"/>
+          <span style="font-weight:600;font-size:.82rem;line-height:1.5">Saya menyatakan data yang diisi adalah benar dan saya bertanggung jawab atas pengajuan HR Request ini sesuai prosedur YAKKUM.</span>
+        </label>
+        <span class="errmsg" id="err-chk">Harap centang pernyataan persetujuan</span>
+      </div>
+    </div>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goTo(2)">← Kembali</button>
-      <button class="btn btn-primary" onclick="goTo(4)">Lanjut →</button>
+      <button class="btn btn-outline" onclick="goPage(4)">&#8249; Kembali</button>
+      <button class="btn btn-success" id="btn-submit" onclick="submitForm()">&#128640; Submit HR Request</button>
     </div>
   </div>
+</div>
 
-  <!-- ==================== PAGE 4 ==================== -->
-  <div id="page4" style="display:none">
-    <div class="card">
-      <div class="card-title">✍️ Halaman 4 — Justifikasi & Rantai Persetujuan</div>
-      <div class="form-grid full">
-        <div class="form-group">
-          <label>Justifikasi Permintaan HR <span class="req">*</span></label>
-          <textarea id="justifikasi" placeholder="Jelaskan alasan dan kebutuhan penambahan/perubahan SDM ini secara lengkap..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>Anggaran / Budget yang Tersedia</label>
-          <input type="text" id="anggaran" placeholder="cth: Sesuai standar grade, Rp 5.000.000/bulan, dll"/>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🔗 Rantai Persetujuan (Approval Chain)</div>
-
-      <div class="approval-item required">
-        <div class="approval-level">⚠️ Level 1 — Atasan Langsung (WAJIB)</div>
-        <div class="form-group">
-          <label>Nama Atasan Langsung <span class="req">*</span></label>
-          <input type="text" id="namaAtasan" placeholder="Nama lengkap atasan langsung"/>
-        </div>
-        <div class="form-group" style="margin-top:10px">
-          <label>Email Atasan Langsung <span class="req">*</span></label>
-          <input type="email" id="emailAtasan" placeholder="atasan@unit.yakkum.or.id"/>
-        </div>
-      </div>
-
-      <div class="approval-item">
-        <div class="approval-level">Level 2 — Kepala Unit / Manajer (Opsional)</div>
-        <div class="form-group">
-          <label>Nama Kepala Unit / Manajer</label>
-          <input type="text" id="namaKepalaUnit" placeholder="Nama Kepala Unit atau Manajer (jika ada)"/>
-        </div>
-        <div class="form-group" style="margin-top:10px">
-          <label>Email Kepala Unit / Manajer</label>
-          <input type="email" id="emailKepalaUnit" placeholder="kepala.unit@yakkum.or.id"/>
-        </div>
-      </div>
-
-      <div class="approval-item required">
-        <div class="approval-level">⚠️ Level 3 — HR Kantor Pusat YAKKUM (WAJIB)</div>
-        <div class="form-group">
-          <label>Email HR Kantor Pusat <span class="req">*</span></label>
-          <input type="email" id="emailHR" placeholder="hr@yakkum.or.id"/>
-          <span class="hint">Email Divisi Human Resources Kantor Pusat YAKKUM</span>
-        </div>
-      </div>
-
-      <div class="approval-item">
-        <div class="approval-level">Level 4 — Direktur Unit / RS (Opsional)</div>
-        <div class="form-group">
-          <label>Email Direktur Unit / RS</label>
-          <input type="email" id="emailDirekturUnit" placeholder="direktur@unit.yakkum.or.id"/>
-        </div>
-      </div>
-
-      <div class="approval-item">
-        <div class="approval-level">Level 5 — Direktur YAKKUM (Opsional)</div>
-        <div class="form-group">
-          <label>Email Direktur YAKKUM</label>
-          <input type="email" id="emailDirekturYakkum" placeholder="direktur@yakkum.or.id"/>
-        </div>
-      </div>
-    </div>
-
-    <div class="error-msg" id="err4">⚠️ Harap lengkapi justifikasi dan email approval yang wajib diisi</div>
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goTo(3)">← Kembali</button>
-      <button class="btn btn-primary" onclick="goTo(5)">Lanjut →</button>
-    </div>
+<!-- SUCCESS PAGE -->
+<div id="page-success" class="section-page">
+  <div class="suc-icon">&#127881;</div>
+  <h2>HR Request Berhasil Dikirim!</h2>
+  <p>Data tersimpan di <b>Google Sheet YAKKUM</b>. Email berisi tombol <b>&#9989; Setuju / &#10060; Tolak</b> telah dikirim ke Atasan Level 1. Proses approval berjalan otomatis berjenjang hingga semua level selesai.</p>
+  <div class="ref-number" id="ref-number">YAKKUM-HRR-XXXX-XXXX</div>
+  <div class="email-sent-box">
+    <div class="etitle">&#128202; Status Pengiriman:</div>
+    <div id="email-sent-list" style="font-size:.83rem;line-height:2.2"></div>
   </div>
-
-  <!-- ==================== PAGE 5 ==================== -->
-  <div id="page5" style="display:none">
-    <div class="card">
-      <div class="card-title">🔍 Halaman 5 — Review & Submit</div>
-      <div class="ref-badge" id="refBadge2"></div>
-      <table class="review-table" id="reviewTable"></table>
-    </div>
-
-    <div class="card">
-      <div class="card-title">✍️ Tanda Tangan Digital</div>
-      <p style="font-size:0.85rem;color:#6b7280;margin-bottom:12px">
-        Tanda tangani di bawah ini sebagai pernyataan bahwa data yang diisi adalah benar dan dapat dipertanggungjawabkan.
-      </p>
-      <canvas id="sigCanvas" width="780" height="140" style="max-width:100%"></canvas>
-      <div style="margin-top:8px;display:flex;gap:10px">
-        <button class="btn btn-secondary" onclick="clearSig()" style="padding:6px 16px;font-size:0.8rem">🗑️ Hapus</button>
-        <span style="font-size:0.78rem;color:#6b7280;align-self:center">Gunakan mouse atau touchscreen untuk menandatangani</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.88rem;font-weight:400">
-        <input type="checkbox" id="checkDeclaration" style="width:18px;height:18px;margin-top:2px;flex-shrink:0"/>
-        <span>Saya menyatakan bahwa seluruh informasi yang saya isi dalam formulir ini adalah <strong>benar, lengkap, dan dapat dipertanggungjawabkan</strong>. Saya memahami bahwa permintaan ini akan diproses melalui rantai persetujuan yang telah ditentukan sesuai ketentuan YAKKUM.</span>
-      </label>
-    </div>
-
-    <div class="error-msg" id="err5">⚠️ Harap berikan tanda tangan dan centang pernyataan di atas</div>
-    <div id="errSubmit" class="error-msg"></div>
-
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goTo(4)">← Kembali</button>
-      <button class="btn btn-success" id="btnSubmit" onclick="submitForm()">
-        📤 Submit Permintaan HR
-      </button>
-    </div>
+  <div class="approval-track" style="max-width:540px;margin:0 auto 26px">
+    <div class="atrack-item"><div class="atrack-dot atr-done">&#10004;</div><div class="atrack-label">Submit &amp;<br>Tersimpan</div></div>
+    <div class="atrack-item"><div class="atrack-dot atr-active">&#128231;</div><div class="atrack-label">Email ke<br>Atasan L1</div></div>
+    <div class="atrack-item"><div class="atrack-dot atr-pending">&#8987;</div><div class="atrack-label">Menunggu<br>Keputusan</div></div>
+    <div class="atrack-item"><div class="atrack-dot atr-pending">&rarr;</div><div class="atrack-label">Berjenjang<br>Otomatis</div></div>
+    <div class="atrack-item"><div class="atrack-dot atr-pending">&#10003;</div><div class="atrack-label">Selesai</div></div>
   </div>
+  <button class="btn btn-primary" onclick="resetForm()" style="margin:0 auto">&#128260; Buat HR Request Baru</button>
+</div>
 
-  <!-- ==================== SUCCESS PAGE ==================== -->
-  <div id="pageSuccess" style="display:none">
-    <div class="card">
-      <div class="success-box">
-        <div class="success-icon">✅</div>
-        <h2>Permintaan HR Berhasil Disubmit!</h2>
-        <p>Nomor Referensi Anda:</p>
-        <div class="ref-badge" id="successRef" style="font-size:1rem;padding:10px 24px;margin:12px auto;display:inline-block"></div>
-        <p style="margin-top:16px">Data Anda telah tersimpan di sistem YAKKUM dan notifikasi telah dikirimkan kepada rantai persetujuan yang ditentukan.<br><br>
-        Simpan nomor referensi ini untuk keperluan tindak lanjut.</p>
-        <button class="btn btn-primary" onclick="resetForm()" style="margin-top:24px">
-          📝 Buat Permintaan Baru
-        </button>
-      </div>
-    </div>
-  </div>
-
-</div><!-- end container -->
+</div></div>
 
 <script>
-// ============================================================
-// KONFIGURASI — GANTI URL INI DENGAN URL APPS SCRIPT ANDA
-// ============================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyL4hxMLxn_ReuBFWOrpXx1Zusge5jzB9D6CyvZNe1JuD2n2IRO5_fbu5rlYs1v87M/exec";
+// ================================================================
+// GANTI URL INI SETELAH DEPLOY GOOGLE APPS SCRIPT
+// Cara: Apps Script -> Deploy -> Manage Deployments -> copy URL
+// ================================================================
+const APPS_SCRIPT_URL = 'PASTE_URL_GOOGLE_APPS_SCRIPT_DISINI';
+// Contoh: 'https://script.google.com/macros/s/AKfycbxXXXXX/exec'
+// ================================================================
 
-// ============================================================
-// NOMOR REFERENSI
-// ============================================================
-function generateRef() {
-  const now = new Date();
-  const ym = now.getFullYear().toString() + String(now.getMonth()+1).padStart(2,'0');
-  const rand = String(Math.floor(Math.random()*9000)+1000);
-  return `YAKKUM-HRR-${ym}-${rand}`;
+document.getElementById('p-tgl').value=new Date().toISOString().split('T')[0];
+const _d30=new Date();_d30.setDate(_d30.getDate()+30);
+document.getElementById('d-tglmulai').value=_d30.toISOString().split('T')[0];
+
+function setStep(n){for(let i=1;i<=5;i++){const s=document.getElementById('st'+i);s.classList.remove('active','done');if(i<n)s.classList.add('done');else if(i===n)s.classList.add('active');}}
+function showPage(n){document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));const pg=n==='success'?document.getElementById('page-success'):document.getElementById('page'+n);if(pg)pg.classList.add('active');setStep(typeof n==='number'?n:6);window.scrollTo({top:0,behavior:'smooth'});}
+function switchDir(dir,tab){document.querySelectorAll('.dir-tab').forEach(t=>t.classList.remove('active-tab'));tab.classList.add('active-tab');document.querySelectorAll('.unit-panel').forEach(p=>p.classList.remove('show'));document.getElementById('panel-'+dir).classList.add('show');const map={dpk:'DPK',akademik:'Akademik',kp:'Kantor Pusat YAKKUM',pkmk:'PKMK'};document.getElementById('sel-direktorat').value=map[dir];}
+function onDpkUnit(){const val=document.getElementById('dpk-unit').value;const wrap=document.getElementById('dpk-tipe-wrap');if(!val){wrap.style.display='none';return;}document.getElementById('dpk-tipe').value=val.split('|')[2]||'';wrap.style.display='flex';}
+function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+function setErr(id,show){const e=document.getElementById('err-'+id);const i=document.getElementById(id);if(e)e.classList.toggle('show',show);if(i)i.classList.toggle('error',show);}
+function v(id,cond){setErr(id,!cond);return cond;}
+function g(id){return(document.getElementById(id)||{}).value?.trim()||'';}
+
+function validatePage1(){let ok=true;ok=v('p-nama',!!g('p-nama'))&&ok;ok=v('p-nik',!!g('p-nik'))&&ok;ok=v('p-jabatan',!!g('p-jabatan'))&&ok;ok=v('p-email',isEmail(g('p-email')))&&ok;ok=v('p-telp',!!g('p-telp'))&&ok;return ok;}
+function validatePage2(){const dir=document.getElementById('sel-direktorat').value;let ok=true;if(dir==='DPK'){ok=v('dpk-unit',!!document.getElementById('dpk-unit').value)&&ok;ok=v('dpk-dept',!!document.getElementById('dpk-dept').value)&&ok;}else if(dir==='Akademik'){ok=v('ak-unit',!!document.getElementById('ak-unit').value)&&ok;ok=v('ak-dept',!!document.getElementById('ak-dept').value)&&ok;}else if(dir==='Kantor Pusat YAKKUM'){ok=v('kp-dept',!!document.getElementById('kp-dept').value)&&ok;}else if(dir==='PKMK'){ok=v('pkmk-unit',!!document.getElementById('pkmk-unit').value)&&ok;ok=v('pkmk-dept',!!document.getElementById('pkmk-dept').value)&&ok;}return ok;}
+function validatePage3(){let ok=true;ok=v('jenis',!!document.querySelector('input[name=jenis]:checked'))&&ok;ok=v('d-posisi',!!g('d-posisi'))&&ok;ok=v('d-klasifikasi',!!document.getElementById('d-klasifikasi').value)&&ok;ok=v('d-status',!!document.getElementById('d-status').value)&&ok;ok=v('d-jumlah',parseInt(g('d-jumlah'))>=1)&&ok;ok=v('d-tglmulai',!!g('d-tglmulai'))&&ok;ok=v('d-pendidikan',!!document.getElementById('d-pendidikan').value)&&ok;return ok;}
+function validatePage4(){let ok=true;ok=v('j-alasan',g('j-alasan').length>=20)&&ok;ok=v('a1-nama',!!g('a1-nama'))&&ok;ok=v('a1-jbt',!!g('a1-jbt'))&&ok;ok=v('a1-email',isEmail(g('a1-email')))&&ok;ok=v('a3-nama',!!g('a3-nama'))&&ok;ok=v('a3-email',isEmail(g('a3-email')))&&ok;return ok;}
+function validatePage5(){let ok=true;ok=v('ttd',!!g('ttd'))&&ok;const chk=document.getElementById('chk-agree').checked;document.getElementById('err-chk').classList.toggle('show',!chk);if(!chk)ok=false;return ok;}
+function goPage(n){if(n===2&&!validatePage1())return;if(n===3&&!validatePage2())return;if(n===4&&!validatePage3())return;if(n===5&&!validatePage4())return;if(n===5)buildReview();showPage(n);}
+
+function getFormData(){
+  const dir=document.getElementById('sel-direktorat').value;
+  let unitKode='',unitNama='',unitTipe='',dept='',subdept='';
+  if(dir==='DPK'){const p=document.getElementById('dpk-unit').value.split('|');unitKode=p[0]||'';unitNama=p[1]||'';unitTipe=p[2]||'';dept=document.getElementById('dpk-dept').value;subdept=g('dpk-subdept');}
+  else if(dir==='Akademik'){const p=document.getElementById('ak-unit').value.split('|');unitKode=p[0]||'';unitNama=p[1]||'';unitTipe=p[2]||'';dept=document.getElementById('ak-dept').value;}
+  else if(dir==='Kantor Pusat YAKKUM'){unitKode='KP';unitNama='Kantor Pusat YAKKUM';unitTipe='Kantor Pusat';dept=document.getElementById('kp-dept').value;subdept=g('kp-subdept');}
+  else if(dir==='PKMK'){const p=document.getElementById('pkmk-unit').value.split('|');unitKode=p[0]||'';unitNama=p[1]||'';unitTipe=p[2]||'';dept=document.getElementById('pkmk-dept').value;}
+  return{pNama:g('p-nama'),pNik:g('p-nik'),pJbt:g('p-jabatan'),pEmail:g('p-email'),pTelp:g('p-telp'),pTgl:g('p-tgl'),pNoSurat:g('p-nosurat')||'-',direktorat:dir,unitKode,unitNama,unitTipe,dept,subdept:subdept||'-',jenis:(document.querySelector('input[name=jenis]:checked')||{value:'-'}).value,posisi:g('d-posisi'),klasifikasi:document.getElementById('d-klasifikasi').value,status:document.getElementById('d-status').value,jumlah:g('d-jumlah'),tglMulai:g('d-tglmulai'),pendidikan:document.getElementById('d-pendidikan').value,pengalaman:document.getElementById('d-pengalaman').value,sertif:g('d-sertif')||'-',shift:document.getElementById('d-shift').value,ket:g('d-ket')||'-',alasan:g('j-alasan'),dampak:g('j-dampak')||'-',a1Nama:g('a1-nama'),a1Jbt:g('a1-jbt'),a1Email:g('a1-email'),a1Telp:g('a1-telp')||'-',a2Nama:g('a2-nama')||'-',a2Jbt:g('a2-jbt')||'-',a2Email:g('a2-email')||'-',a2Telp:g('a2-telp')||'-',a3Nama:g('a3-nama'),a3Jbt:g('a3-jbt')||'Kepala Divisi HR YAKKUM',a3Email:g('a3-email'),a3Telp:g('a3-telp')||'-',a4Nama:g('a4-nama')||'-',a4Email:g('a4-email')||'-',a5Nama:g('a5-nama')||'-',a5Email:g('a5-email')||'-',ttd:g('ttd')};
 }
-const REF_NUMBER = generateRef();
 
-window.onload = function() {
-  document.getElementById('refBadge').textContent = REF_NUMBER;
-  document.getElementById('refBadge2').textContent = REF_NUMBER;
-  document.getElementById('tanggalPengajuan').value = new Date().toISOString().split('T')[0];
-  initSignature();
-};
+function fmtDate(s){if(!s)return'-';try{return new Date(s).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return s;}}
+function tipeBadge(t){const m={'Tipe B':'badge-b','Tipe C':'badge-c','Tipe D':'badge-d','Klinik':'badge-klinik','Kampus Utama':'badge-ak','PSDKU Semarang':'badge-ak','PSDKU Temanggung':'badge-ak','Kantor Pusat':'badge-kp','PKMK':'badge-pkmk'};return '<span class="badge '+(m[t]||'badge-kp')+'">'+t+'</span>';}
 
-// ============================================================
-// NAVIGASI HALAMAN
-// ============================================================
-let currentPage = 1;
-const totalPages = 5;
+function buildReview(){
+  const d=getFormData();
+  const rows=[['header','IDENTITAS PEMOHON'],['Nama Pemohon',d.pNama],['NIK',d.pNik],['Jabatan',d.pJbt],['Email',d.pEmail],['Telepon',d.pTelp],['Tgl Pengajuan',fmtDate(d.pTgl)],['No. Surat',d.pNoSurat],['header','DIREKTORAT & UNIT'],['Direktorat',d.direktorat],['Unit',tipeBadge(d.unitTipe)+' '+d.unitNama+' ('+d.unitKode+')'],['Departemen',d.dept],['header','DETAIL PERMINTAAN'],['Jenis',d.jenis],['Posisi','<b>'+d.posisi+'</b>'],['Klasifikasi',d.klasifikasi],['Status',d.status],['Jumlah','<b>'+d.jumlah+' orang</b>'],['Target Mulai',fmtDate(d.tglMulai)],['Pendidikan Min.',d.pendidikan],['Pengalaman Min.',d.pengalaman],['Sertifikasi',d.sertif],['header','JUSTIFIKASI'],['Alasan',d.alasan],['Dampak',d.dampak],['header','RANTAI PERSETUJUAN'],['L1 - Atasan Langsung',d.a1Nama+' ('+d.a1Jbt+')<br><small>Email: '+d.a1Email+'</small>'],['L2 - Kepala Unit',d.a2Email!=='-'?d.a2Nama+'<br><small>Email: '+d.a2Email+'</small>':'<i>Tidak diisi</i>'],['L3 - HR Kantor Pusat',d.a3Nama+'<br><small>Email: '+d.a3Email+'</small>'],['L4 - Direktur Unit',d.a4Email!=='-'?d.a4Nama+'<br><small>Email: '+d.a4Email+'</small>':'<i>Tidak diisi</i>'],['L5 - Direktur YAKKUM',d.a5Email!=='-'?d.a5Nama+'<br><small>Email: '+d.a5Email+'</small>':'<i>Tidak diisi</i>']];
+  let html='';rows.forEach(r=>{if(r[0]==='header'){html+='<tr class="rthead"><td colspan="2">'+r[1]+'</td></tr>';}else{html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';}});
+  document.getElementById('rtbody').innerHTML=html;
+}
 
-function goTo(page) {
-  if (page > currentPage && !validate(currentPage)) return;
-  document.getElementById('page'+currentPage).style.display = 'none';
-  document.getElementById('si'+currentPage).className = 'step done';
-  currentPage = page;
-  document.getElementById('page'+currentPage).style.display = 'block';
-  for(let i=1;i<=totalPages;i++){
-    const el = document.getElementById('si'+i);
-    if(i < page) el.className = 'step done';
-    else if(i === page) el.className = 'step active';
-    else el.className = 'step';
+function genRef(){const y=new Date().getFullYear();const m=String(new Date().getMonth()+1).padStart(2,'0');return 'YAKKUM-HRR-'+y+m+'-'+Math.floor(1000+Math.random()*9000);}
+
+async function submitForm(){
+  if(!validatePage5())return;
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='PASTE_URL_GOOGLE_APPS_SCRIPT_DISINI'){
+    alert('Setup belum selesai!\n\nLangkah:\n1. Buka Google Sheet baru\n2. Extensions > Apps Script\n3. Paste kode dari Code.gs\n4. Deploy > New Deployment > Web App\n5. Copy URL deployment\n6. Paste ke variabel APPS_SCRIPT_URL di file index.html ini\n7. Upload ulang ke GitHub');
+    return;
   }
-  if(page === 5) buildReview();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-// ============================================================
-// VALIDASI
-// ============================================================
-function showErr(id, show) {
-  document.getElementById(id).style.display = show ? 'block' : 'none';
-}
-
-function validate(page) {
-  if(page === 1) {
-    const ok = v('namaPemohon') && v('nip') && v('jabatan') && v('emailPemohon') && v('telepon');
-    showErr('err1', !ok); return ok;
-  }
-  if(page === 2) {
-    const dir = getActiveDir();
-    if(!dir) { showErr('err2', true); return false; }
-    const unit = getUnitValue(dir);
-    const dept = getDeptValue(dir);
-    const ok = !!unit && !!dept;
-    showErr('err2', !ok); return ok;
-  }
-  if(page === 3) {
-    const ok = v('posisi') && v('jenisPermintaan') && v('jumlah') && v('klasifikasi') && v('pendidikan') && v('targetMulai') && v('hubunganKerja');
-    showErr('err3', !ok); return ok;
-  }
-  if(page === 4) {
-    const ok = v('justifikasi') && v('namaAtasan') && v('emailAtasan') && v('emailHR');
-    showErr('err4', !ok); return ok;
-  }
-  return true;
-}
-
-function v(id) { return document.getElementById(id).value.trim() !== ''; }
-
-// ============================================================
-// DIREKTORAT
-// ============================================================
-let activeDir = '';
-
-function switchDir(dir) {
-  activeDir = dir;
-  document.querySelectorAll('.dir-tab').forEach((t,i) => {
-    t.className = 'dir-tab' + (['dpk','akademik','kanpus','pkmk'][i] === dir ? ' active' : '');
-  });
-  document.querySelectorAll('.dir-panel').forEach(p => p.className = 'dir-panel');
-  document.getElementById('panel-'+dir).className = 'dir-panel active';
-}
-
-function getActiveDir() { return activeDir; }
-
-function getUnitValue(dir) {
-  const map = { dpk:'unit-dpk', akademik:'unit-akademik', kanpus:'unit-kanpus', pkmk:'unit-pkmk' };
-  return document.getElementById(map[dir])?.value || '';
-}
-
-function getDeptValue(dir) {
-  const map = { dpk:'dept-dpk', akademik:'dept-akademik', kanpus:'dept-kanpus', pkmk:'dept-pkmk' };
-  return document.getElementById(map[dir])?.value || '';
-}
-
-function getDirLabel(dir) {
-  const map = { dpk:'DPK – Direktorat Pelayanan Kesehatan', akademik:'Akademik – STIKES Bethesda', kanpus:'Kantor Pusat YAKKUM', pkmk:'PKMK – Pengembangan & Pelayanan Kesehatan Masyarakat' };
-  return map[dir] || dir;
-}
-
-// ============================================================
-// REVIEW TABLE
-// ============================================================
-function buildReview() {
-  const dir = getActiveDir();
-  const rows = [
-    ['No. Referensi', REF_NUMBER],
-    ['Tanggal Pengajuan', document.getElementById('tanggalPengajuan').value],
-    ['— IDENTITAS PEMOHON —', ''],
-    ['Nama Lengkap', document.getElementById('namaPemohon').value],
-    ['NIP / No. Pegawai', document.getElementById('nip').value],
-    ['Jabatan', document.getElementById('jabatan').value],
-    ['Email', document.getElementById('emailPemohon').value],
-    ['Telepon / WA', document.getElementById('telepon').value],
-    ['— UNIT KERJA —', ''],
-    ['Direktorat', getDirLabel(dir)],
-    ['Unit', getUnitValue(dir)],
-    ['Departemen / Bagian', getDeptValue(dir)],
-    ['— DETAIL PERMINTAAN —', ''],
-    ['Posisi yang Diminta', document.getElementById('posisi').value],
-    ['Jenis Permintaan', document.getElementById('jenisPermintaan').value],
-    ['Jumlah SDM', document.getElementById('jumlah').value + ' orang'],
-    ['Klasifikasi Posisi', document.getElementById('klasifikasi').value],
-    ['Pendidikan Minimal', document.getElementById('pendidikan').value],
-    ['Pengalaman Minimal', document.getElementById('pengalaman').value],
-    ['Kompetensi Khusus', document.getElementById('kompetensi').value || '-'],
-    ['Target Mulai', document.getElementById('targetMulai').value],
-    ['Jenis Hubungan Kerja', document.getElementById('hubunganKerja').value],
-    ['— JUSTIFIKASI & PERSETUJUAN —', ''],
-    ['Justifikasi', document.getElementById('justifikasi').value],
-    ['Anggaran', document.getElementById('anggaran').value || '-'],
-    ['Email Atasan Langsung', document.getElementById('emailAtasan').value],
-    ['Email Kepala Unit', document.getElementById('emailKepalaUnit').value || '-'],
-    ['Email HR Kantor Pusat', document.getElementById('emailHR').value],
-    ['Email Direktur Unit', document.getElementById('emailDirekturUnit').value || '-'],
-    ['Email Direktur YAKKUM', document.getElementById('emailDirekturYakkum').value || '-'],
-  ];
-
-  let html = '';
-  rows.forEach(r => {
-    if(r[1] === '') {
-      html += `<tr><td colspan="2" style="background:#1a56a0;color:white;font-weight:700;font-size:0.8rem;letter-spacing:0.5px">${r[0]}</td></tr>`;
-    } else {
-      html += `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`;
-    }
-  });
-  document.getElementById('reviewTable').innerHTML = html;
-}
-
-// ============================================================
-// SIGNATURE
-// ============================================================
-let sigDrawing = false;
-let sigCtx, sigCanvas;
-
-function initSignature() {
-  sigCanvas = document.getElementById('sigCanvas');
-  sigCtx = sigCanvas.getContext('2d');
-  sigCtx.strokeStyle = '#1a56a0';
-  sigCtx.lineWidth = 2.5;
-  sigCtx.lineCap = 'round';
-
-  sigCanvas.addEventListener('mousedown', e => { sigDrawing=true; sigCtx.beginPath(); sigCtx.moveTo(...getPos(e)); });
-  sigCanvas.addEventListener('mousemove', e => { if(!sigDrawing) return; sigCtx.lineTo(...getPos(e)); sigCtx.stroke(); });
-  sigCanvas.addEventListener('mouseup', () => sigDrawing=false);
-  sigCanvas.addEventListener('mouseleave', () => sigDrawing=false);
-  sigCanvas.addEventListener('touchstart', e => { e.preventDefault(); sigDrawing=true; sigCtx.beginPath(); sigCtx.moveTo(...getPos(e.touches[0])); });
-  sigCanvas.addEventListener('touchmove', e => { e.preventDefault(); if(!sigDrawing) return; sigCtx.lineTo(...getPos(e.touches[0])); sigCtx.stroke(); });
-  sigCanvas.addEventListener('touchend', () => sigDrawing=false);
-}
-
-function getPos(e) {
-  const r = sigCanvas.getBoundingClientRect();
-  return [e.clientX - r.left, e.clientY - r.top];
-}
-
-function clearSig() {
-  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-}
-
-function isSigned() {
-  const d = sigCtx.getImageData(0,0,sigCanvas.width,sigCanvas.height).data;
-  return d.some(v => v !== 0);
-}
-
-// ============================================================
-// SUBMIT FORM → GOOGLE SHEETS
-// ============================================================
-async function submitForm() {
-  const signed = isSigned();
-  const checked = document.getElementById('checkDeclaration').checked;
-  showErr('err5', !signed || !checked);
-  if(!signed || !checked) return;
-
-  const dir = getActiveDir();
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Menyimpan data...';
-
-  const payload = {
-    referenceNumber:    REF_NUMBER,
-    tanggalPengajuan:   document.getElementById('tanggalPengajuan').value,
-    namaPemohon:        document.getElementById('namaPemohon').value,
-    nip:                document.getElementById('nip').value,
-    jabatan:            document.getElementById('jabatan').value,
-    emailPemohon:       document.getElementById('emailPemohon').value,
-    telepon:            document.getElementById('telepon').value,
-    direktorat:         getDirLabel(dir),
-    unitKerja:          getUnitValue(dir),
-    departemen:         getDeptValue(dir),
-    posisi:             document.getElementById('posisi').value,
-    jenisPermintaan:    document.getElementById('jenisPermintaan').value,
-    jumlah:             document.getElementById('jumlah').value,
-    klasifikasi:        document.getElementById('klasifikasi').value,
-    pendidikan:         document.getElementById('pendidikan').value,
-    pengalaman:         document.getElementById('pengalaman').value,
-    kompetensi:         document.getElementById('kompetensi').value,
-    targetMulai:        document.getElementById('targetMulai').value,
-    hubunganKerja:      document.getElementById('hubunganKerja').value,
-    justifikasi:        document.getElementById('justifikasi').value,
-    anggaran:           document.getElementById('anggaran').value,
-    emailAtasan:        document.getElementById('emailAtasan').value,
-    namaAtasan:         document.getElementById('namaAtasan').value,
-    emailKepalaUnit:    document.getElementById('emailKepalaUnit').value,
-    namaKepalaUnit:     document.getElementById('namaKepalaUnit').value,
-    emailHR:            document.getElementById('emailHR').value,
-    emailDirekturUnit:  document.getElementById('emailDirekturUnit').value,
-    emailDirekturYakkum:document.getElementById('emailDirekturYakkum').value,
-  };
-
-  try {
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    // Tampilkan sukses
-    document.getElementById('page5').style.display = 'none';
-    document.getElementById('pageSuccess').style.display = 'block';
-    document.getElementById('successRef').textContent = REF_NUMBER;
-    for(let i=1;i<=5;i++) document.getElementById('si'+i).className = 'step done';
-    window.scrollTo({top:0, behavior:'smooth'});
-
-  } catch(err) {
-    btn.disabled = false;
-    btn.innerHTML = '📤 Submit Permintaan HR';
-    const errEl = document.getElementById('errSubmit');
-    errEl.style.display = 'block';
-    errEl.textContent = '❌ Gagal mengirim data. Periksa koneksi internet dan coba lagi.';
+  const d=getFormData();const ref=genRef();
+  const overlay=document.getElementById('loading-overlay');
+  const btnSubmit=document.getElementById('btn-submit');
+  overlay.classList.add('show');btnSubmit.disabled=true;
+  try{
+    const response=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'submit',ref_number:ref,...d})});
+    const result=await response.json();
+    overlay.classList.remove('show');btnSubmit.disabled=false;
+    if(result.status==='success'){
+      document.getElementById('ref-number').textContent=ref;
+      let el='&#9989; <b>Data tersimpan</b> di Google Sheet YAKKUM<br>';
+      el+='&#128231; Email <b>Setuju / Tolak</b> dikirim ke: <b>'+d.a1Email+'</b><br>';
+      el+='<span style="color:var(--muted);font-size:.78rem">&nbsp;&nbsp;&nbsp;'+d.a1Nama+' &mdash; Atasan Langsung Level 1</span><br>';
+      el+='&#8987; Level 2&ndash;5 otomatis mendapat email setelah level sebelumnya menyetujui<br>';
+      el+='&#128202; HR dapat memantau status real-time di <b>Google Sheet YAKKUM</b>';
+      document.getElementById('email-sent-list').innerHTML=el;
+      document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-success').classList.add('active');setStep(6);window.scrollTo({top:0,behavior:'smooth'});
+    }else{alert('Terjadi kesalahan: '+(result.message||'Unknown error'));}
+  }catch(err){
+    overlay.classList.remove('show');btnSubmit.disabled=false;
+    alert('Gagal terhubung ke server.\n\nPastikan URL Google Apps Script sudah benar dan deployment aktif.\n\nError: '+err.message);
   }
 }
 
-// ============================================================
-// RESET FORM
-// ============================================================
-function resetForm() {
-  location.reload();
+function resetForm(){
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],textarea').forEach(el=>{if(el.id!=='p-tgl')el.value='';});
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
+  document.getElementById('chk-agree').checked=false;
+  document.getElementById('dpk-tipe-wrap').style.display='none';
+  document.getElementById('p-tgl').value=new Date().toISOString().split('T')[0];
+  const d30=new Date();d30.setDate(d30.getDate()+30);document.getElementById('d-tglmulai').value=d30.toISOString().split('T')[0];
+  document.querySelectorAll('.dir-tab').forEach((t,i)=>t.classList.toggle('active-tab',i===0));
+  document.querySelectorAll('.unit-panel').forEach((p,i)=>p.classList.toggle('show',i===0));
+  document.getElementById('sel-direktorat').value='DPK';
+  document.querySelectorAll('.errmsg').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('.error').forEach(e=>e.classList.remove('error'));
+  showPage(1);
 }
 </script>
 </body>
