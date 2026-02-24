@@ -542,7 +542,7 @@ function genRef(){const y=new Date().getFullYear();const m=String(new Date().get
 
 async function submitForm(){
   if(!validatePage5())return;
-  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='PASTE_URL_GOOGLE_APPS_SCRIPT_DISINI'){
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbzK_cecQMzVSIZ2fP_wXS2oUSlZgyDZBlYcSnzzeaq4HOExNRPZcg6-aTDi5N22rtf8/exec'){
     alert('Setup belum selesai!\n\nLangkah:\n1. Buka Google Sheet baru\n2. Extensions > Apps Script\n3. Paste kode dari Code.gs\n4. Deploy > New Deployment > Web App\n5. Copy URL deployment\n6. Paste ke variabel APPS_SCRIPT_URL di file index.html ini\n7. Upload ulang ke GitHub');
     return;
   }
