@@ -320,6 +320,41 @@
       </div>
     </div>
     <div class="form-row full"><div class="form-group"><label>Keterangan Tambahan</label><textarea id="d-ket" rows="2" placeholder="Persyaratan khusus lainnya..."></textarea></div></div>
+    <hr class="divider"/>
+    <div class="sec-title">Anggaran / Budget</div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label>Status Anggaran <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" name="budget" id="b1" value="Dibudgetkan" onchange="onBudgetChange()"/>
+            <label for="b1"><div class="dot"></div>&#9989; Dibudgetkan</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="budget" id="b2" value="Tidak Dibudgetkan" onchange="onBudgetChange()"/>
+            <label for="b2"><div class="dot"></div>&#10060; Tidak Dibudgetkan</label>
+          </div>
+        </div>
+        <span class="errmsg" id="err-budget">Pilih status anggaran</span>
+      </div>
+    </div>
+    <div id="budget-warning" style="display:none">
+      <div class="infobox red" style="margin-top:4px">
+        <span class="ib-icon">&#9888;&#65039;</span>
+        <div>
+          <b>Persetujuan Tambahan Diperlukan!</b><br>
+          Karena posisi ini <b>Tidak Dibudgetkan</b>, pengajuan memerlukan persetujuan khusus dari <b>Pengurus Yayasan YAKKUM</b> sebelum dapat diproses oleh HR. Pastikan Anda sudah berkoordinasi dengan Pengurus Yayasan sebelum mengajukan form ini.<br>
+          <span style="font-size:.78rem;margin-top:6px;display:block">&#128221; Level approval akan otomatis mencakup persetujuan Pengurus Yayasan.</span>
+        </div>
+      </div>
+      <div class="form-row full" style="margin-top:8px">
+        <div class="form-group">
+          <label>Alasan Tidak Dibudgetkan <span class="req">*</span></label>
+          <textarea id="budget-alasan" rows="2" placeholder="Jelaskan mengapa posisi ini tidak termasuk dalam anggaran yang telah disetujui..."></textarea>
+          <span class="errmsg" id="err-budget-alasan">Alasan wajib diisi jika tidak dibudgetkan</span>
+        </div>
+      </div>
+    </div>
     <div class="btn-row"><button class="btn btn-outline" onclick="goPage(2)">&#8249; Kembali</button><button class="btn btn-primary" onclick="goPage(4)">Lanjut &#8250;</button></div>
   </div>
 </div>
@@ -458,7 +493,7 @@
 // GANTI URL INI SETELAH DEPLOY GOOGLE APPS SCRIPT
 // Cara: Apps Script -> Deploy -> Manage Deployments -> copy URL
 // ================================================================
-const APPS_SCRIPT_URL = 'PASTE_URL_GOOGLE_APPS_SCRIPT_DISINI';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK_cecQMzVSIZ2fP_wXS2oUSlZgyDZBlYcSnzzeaq4HOExNRPZcg6-aTDi5N22rtf8/exec';
 // Contoh: 'https://script.google.com/macros/s/AKfycbxXXXXX/exec'
 // ================================================================
 
@@ -477,7 +512,8 @@ function g(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
 function validatePage1(){let ok=true;ok=v('p-nama',!!g('p-nama'))&&ok;ok=v('p-nik',!!g('p-nik'))&&ok;ok=v('p-jabatan',!!g('p-jabatan'))&&ok;ok=v('p-email',isEmail(g('p-email')))&&ok;ok=v('p-telp',!!g('p-telp'))&&ok;return ok;}
 function validatePage2(){const dir=document.getElementById('sel-direktorat').value;let ok=true;if(dir==='DPK'){ok=v('dpk-unit',!!document.getElementById('dpk-unit').value)&&ok;ok=v('dpk-dept',!!document.getElementById('dpk-dept').value)&&ok;}else if(dir==='Akademik'){ok=v('ak-unit',!!document.getElementById('ak-unit').value)&&ok;ok=v('ak-dept',!!document.getElementById('ak-dept').value)&&ok;}else if(dir==='Kantor Pusat YAKKUM'){ok=v('kp-dept',!!document.getElementById('kp-dept').value)&&ok;}else if(dir==='PKMK'){ok=v('pkmk-unit',!!document.getElementById('pkmk-unit').value)&&ok;ok=v('pkmk-dept',!!document.getElementById('pkmk-dept').value)&&ok;}return ok;}
-function validatePage3(){let ok=true;ok=v('jenis',!!document.querySelector('input[name=jenis]:checked'))&&ok;ok=v('d-posisi',!!g('d-posisi'))&&ok;ok=v('d-klasifikasi',!!document.getElementById('d-klasifikasi').value)&&ok;ok=v('d-status',!!document.getElementById('d-status').value)&&ok;ok=v('d-jumlah',parseInt(g('d-jumlah'))>=1)&&ok;ok=v('d-tglmulai',!!g('d-tglmulai'))&&ok;ok=v('d-pendidikan',!!document.getElementById('d-pendidikan').value)&&ok;return ok;}
+function onBudgetChange(){const val=(document.querySelector('input[name=budget]:checked')||{}).value;const warn=document.getElementById('budget-warning');warn.style.display=(val==='Tidak Dibudgetkan')?'block':'none';if(val!=='Tidak Dibudgetkan')document.getElementById('budget-alasan').value='';}
+function validatePage3(){let ok=true;ok=v('jenis',!!document.querySelector('input[name=jenis]:checked'))&&ok;ok=v('d-posisi',!!g('d-posisi'))&&ok;ok=v('d-klasifikasi',!!document.getElementById('d-klasifikasi').value)&&ok;ok=v('d-status',!!document.getElementById('d-status').value)&&ok;ok=v('d-jumlah',parseInt(g('d-jumlah'))>=1)&&ok;ok=v('d-tglmulai',!!g('d-tglmulai'))&&ok;ok=v('d-pendidikan',!!document.getElementById('d-pendidikan').value)&&ok;const budgetVal=(document.querySelector('input[name=budget]:checked')||{}).value;ok=v('budget',!!budgetVal)&&ok;if(budgetVal==='Tidak Dibudgetkan')ok=v('budget-alasan',g('budget-alasan').length>=10)&&ok;return ok;}
 function validatePage4(){let ok=true;ok=v('j-alasan',g('j-alasan').length>=20)&&ok;ok=v('a1-nama',!!g('a1-nama'))&&ok;ok=v('a1-jbt',!!g('a1-jbt'))&&ok;ok=v('a1-email',isEmail(g('a1-email')))&&ok;ok=v('a3-nama',!!g('a3-nama'))&&ok;ok=v('a3-email',isEmail(g('a3-email')))&&ok;return ok;}
 function validatePage5(){let ok=true;ok=v('ttd',!!g('ttd'))&&ok;const chk=document.getElementById('chk-agree').checked;document.getElementById('err-chk').classList.toggle('show',!chk);if(!chk)ok=false;return ok;}
 function goPage(n){if(n===2&&!validatePage1())return;if(n===3&&!validatePage2())return;if(n===4&&!validatePage3())return;if(n===5&&!validatePage4())return;if(n===5)buildReview();showPage(n);}
@@ -489,7 +525,7 @@ function getFormData(){
   else if(dir==='Akademik'){const p=document.getElementById('ak-unit').value.split('|');unitKode=p[0]||'';unitNama=p[1]||'';unitTipe=p[2]||'';dept=document.getElementById('ak-dept').value;}
   else if(dir==='Kantor Pusat YAKKUM'){unitKode='KP';unitNama='Kantor Pusat YAKKUM';unitTipe='Kantor Pusat';dept=document.getElementById('kp-dept').value;subdept=g('kp-subdept');}
   else if(dir==='PKMK'){const p=document.getElementById('pkmk-unit').value.split('|');unitKode=p[0]||'';unitNama=p[1]||'';unitTipe=p[2]||'';dept=document.getElementById('pkmk-dept').value;}
-  return{pNama:g('p-nama'),pNik:g('p-nik'),pJbt:g('p-jabatan'),pEmail:g('p-email'),pTelp:g('p-telp'),pTgl:g('p-tgl'),pNoSurat:g('p-nosurat')||'-',direktorat:dir,unitKode,unitNama,unitTipe,dept,subdept:subdept||'-',jenis:(document.querySelector('input[name=jenis]:checked')||{value:'-'}).value,posisi:g('d-posisi'),klasifikasi:document.getElementById('d-klasifikasi').value,status:document.getElementById('d-status').value,jumlah:g('d-jumlah'),tglMulai:g('d-tglmulai'),pendidikan:document.getElementById('d-pendidikan').value,pengalaman:document.getElementById('d-pengalaman').value,sertif:g('d-sertif')||'-',shift:document.getElementById('d-shift').value,ket:g('d-ket')||'-',alasan:g('j-alasan'),dampak:g('j-dampak')||'-',a1Nama:g('a1-nama'),a1Jbt:g('a1-jbt'),a1Email:g('a1-email'),a1Telp:g('a1-telp')||'-',a2Nama:g('a2-nama')||'-',a2Jbt:g('a2-jbt')||'-',a2Email:g('a2-email')||'-',a2Telp:g('a2-telp')||'-',a3Nama:g('a3-nama'),a3Jbt:g('a3-jbt')||'Kepala Divisi HR YAKKUM',a3Email:g('a3-email'),a3Telp:g('a3-telp')||'-',a4Nama:g('a4-nama')||'-',a4Email:g('a4-email')||'-',a5Nama:g('a5-nama')||'-',a5Email:g('a5-email')||'-',ttd:g('ttd')};
+  return{pNama:g('p-nama'),pNik:g('p-nik'),pJbt:g('p-jabatan'),pEmail:g('p-email'),pTelp:g('p-telp'),pTgl:g('p-tgl'),pNoSurat:g('p-nosurat')||'-',direktorat:dir,unitKode,unitNama,unitTipe,dept,subdept:subdept||'-',jenis:(document.querySelector('input[name=jenis]:checked')||{value:'-'}).value,posisi:g('d-posisi'),klasifikasi:document.getElementById('d-klasifikasi').value,status:document.getElementById('d-status').value,jumlah:g('d-jumlah'),tglMulai:g('d-tglmulai'),pendidikan:document.getElementById('d-pendidikan').value,pengalaman:document.getElementById('d-pengalaman').value,sertif:g('d-sertif')||'-',shift:document.getElementById('d-shift').value,ket:g('d-ket')||'-',budget:(document.querySelector('input[name=budget]:checked')||{value:'-'}).value,budgetAlasan:g('budget-alasan')||'-',alasan:g('j-alasan'),dampak:g('j-dampak')||'-',a1Nama:g('a1-nama'),a1Jbt:g('a1-jbt'),a1Email:g('a1-email'),a1Telp:g('a1-telp')||'-',a2Nama:g('a2-nama')||'-',a2Jbt:g('a2-jbt')||'-',a2Email:g('a2-email')||'-',a2Telp:g('a2-telp')||'-',a3Nama:g('a3-nama'),a3Jbt:g('a3-jbt')||'Kepala Divisi HR YAKKUM',a3Email:g('a3-email'),a3Telp:g('a3-telp')||'-',a4Nama:g('a4-nama')||'-',a4Email:g('a4-email')||'-',a5Nama:g('a5-nama')||'-',a5Email:g('a5-email')||'-',ttd:g('ttd')};
 }
 
 function fmtDate(s){if(!s)return'-';try{return new Date(s).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return s;}}
@@ -497,7 +533,7 @@ function tipeBadge(t){const m={'Tipe B':'badge-b','Tipe C':'badge-c','Tipe D':'b
 
 function buildReview(){
   const d=getFormData();
-  const rows=[['header','IDENTITAS PEMOHON'],['Nama Pemohon',d.pNama],['NIK',d.pNik],['Jabatan',d.pJbt],['Email',d.pEmail],['Telepon',d.pTelp],['Tgl Pengajuan',fmtDate(d.pTgl)],['No. Surat',d.pNoSurat],['header','DIREKTORAT & UNIT'],['Direktorat',d.direktorat],['Unit',tipeBadge(d.unitTipe)+' '+d.unitNama+' ('+d.unitKode+')'],['Departemen',d.dept],['header','DETAIL PERMINTAAN'],['Jenis',d.jenis],['Posisi','<b>'+d.posisi+'</b>'],['Klasifikasi',d.klasifikasi],['Status',d.status],['Jumlah','<b>'+d.jumlah+' orang</b>'],['Target Mulai',fmtDate(d.tglMulai)],['Pendidikan Min.',d.pendidikan],['Pengalaman Min.',d.pengalaman],['Sertifikasi',d.sertif],['header','JUSTIFIKASI'],['Alasan',d.alasan],['Dampak',d.dampak],['header','RANTAI PERSETUJUAN'],['L1 - Atasan Langsung',d.a1Nama+' ('+d.a1Jbt+')<br><small>Email: '+d.a1Email+'</small>'],['L2 - Kepala Unit',d.a2Email!=='-'?d.a2Nama+'<br><small>Email: '+d.a2Email+'</small>':'<i>Tidak diisi</i>'],['L3 - HR Kantor Pusat',d.a3Nama+'<br><small>Email: '+d.a3Email+'</small>'],['L4 - Direktur Unit',d.a4Email!=='-'?d.a4Nama+'<br><small>Email: '+d.a4Email+'</small>':'<i>Tidak diisi</i>'],['L5 - Direktur YAKKUM',d.a5Email!=='-'?d.a5Nama+'<br><small>Email: '+d.a5Email+'</small>':'<i>Tidak diisi</i>']];
+  const rows=[['header','IDENTITAS PEMOHON'],['Nama Pemohon',d.pNama],['NIK',d.pNik],['Jabatan',d.pJbt],['Email',d.pEmail],['Telepon',d.pTelp],['Tgl Pengajuan',fmtDate(d.pTgl)],['No. Surat',d.pNoSurat],['header','DIREKTORAT & UNIT'],['Direktorat',d.direktorat],['Unit',tipeBadge(d.unitTipe)+' '+d.unitNama+' ('+d.unitKode+')'],['Departemen',d.dept],['header','DETAIL PERMINTAAN'],['Jenis',d.jenis],['Posisi','<b>'+d.posisi+'</b>'],['Klasifikasi',d.klasifikasi],['Status',d.status],['Jumlah','<b>'+d.jumlah+' orang</b>'],['Target Mulai',fmtDate(d.tglMulai)],['Pendidikan Min.',d.pendidikan],['Pengalaman Min.',d.pengalaman],['Sertifikasi',d.sertif],['Status Anggaran','<b>'+(d.budget==='Tidak Dibudgetkan'?'<span style="color:#b91c1c">&#10060; Tidak Dibudgetkan</span>':'<span style="color:#1b6e3a">&#9989; Dibudgetkan</span>')+'</b>'+(d.budget==='Tidak Dibudgetkan'?'<br><small style="color:#78350f">Alasan: '+d.budgetAlasan+'</small>':'')],['header','JUSTIFIKASI'],['Alasan',d.alasan],['Dampak',d.dampak],['header','RANTAI PERSETUJUAN'],['L1 - Atasan Langsung',d.a1Nama+' ('+d.a1Jbt+')<br><small>Email: '+d.a1Email+'</small>'],['L2 - Kepala Unit',d.a2Email!=='-'?d.a2Nama+'<br><small>Email: '+d.a2Email+'</small>':'<i>Tidak diisi</i>'],['L3 - HR Kantor Pusat',d.a3Nama+'<br><small>Email: '+d.a3Email+'</small>'],['L4 - Direktur Unit',d.a4Email!=='-'?d.a4Nama+'<br><small>Email: '+d.a4Email+'</small>':'<i>Tidak diisi</i>'],['L5 - Direktur YAKKUM',d.a5Email!=='-'?d.a5Nama+'<br><small>Email: '+d.a5Email+'</small>':'<i>Tidak diisi</i>']];
   let html='';rows.forEach(r=>{if(r[0]==='header'){html+='<tr class="rthead"><td colspan="2">'+r[1]+'</td></tr>';}else{html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';}});
   document.getElementById('rtbody').innerHTML=html;
 }
@@ -538,7 +574,7 @@ async function submitForm(){
 function resetForm(){
   document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],textarea').forEach(el=>{if(el.id!=='p-tgl')el.value='';});
   document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
-  document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
+  document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);document.getElementById('budget-warning').style.display='none';
   document.getElementById('chk-agree').checked=false;
   document.getElementById('dpk-tipe-wrap').style.display='none';
   document.getElementById('p-tgl').value=new Date().toISOString().split('T')[0];
