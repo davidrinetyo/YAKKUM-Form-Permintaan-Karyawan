@@ -244,7 +244,7 @@
     <div class="unit-panel" id="panel-kp">
       <div class="form-row">
         <div class="form-group"><label>Divisi / Bagian <span class="req">*</span></label>
-          <select id="kp-dept"><option value="">-- Pilih Divisi / Bagian --</option><option value="Direksi &amp; Sekretariat">Direksi &amp; Sekretariat Yayasan</option><option value="Divisi Human Resources">Divisi Human Resources</option><option value="Divisi Keuangan &amp; Akuntansi">Divisi Keuangan &amp; Akuntansi</option><option value="Divisi IT &amp; Sistem Informasi">Divisi IT &amp; Sistem Informasi</option><option value="Lainnya">Lainnya</option></select>
+          <select id="kp-dept"><option value="">-- Pilih Divisi / Bagian --</option><option value="Sosio Pastoral &amp; Spriritual">Sosio Pastoral &amp; Spriritual</option><option value="Divisi Human Resources">Divisi Human Resources</option><option value="Divisi Keuangan &amp; Akuntansi">Divisi Keuangan &amp; Akuntansi</option><option value="Divisi IT &amp; Sistem Informasi">Divisi IT &amp; Sistem Informasi</option><option value="Divisi Sekretariat dan Umum">Divisi Sekretariat dan Umum</option></select>
           <span class="errmsg" id="err-kp-dept">Pilih divisi/bagian</span>
         </div>
         <div class="form-group"><label>Sub-Bagian <span class="hint">(opsional)</span></label><input type="text" id="kp-subdept" placeholder="cth: Sub-Bagian Rekrutmen"/></div>
@@ -257,7 +257,7 @@
           <span class="errmsg" id="err-pkmk-unit">Pilih unit PKMK</span>
         </div>
         <div class="form-group"><label>Bagian / Program <span class="req">*</span></label>
-          <select id="pkmk-dept"><option value="">-- Pilih Bagian --</option><option value="Program Pemberdayaan Masyarakat">Program Pemberdayaan Masyarakat</option><option value="Program Rehabilitasi Fisik">Program Rehabilitasi Fisik</option><option value="Program Tanggap Bencana">Program Tanggap Bencana</option><option value="Administrasi &amp; Keuangan">Administrasi &amp; Keuangan</option><option value="Lainnya">Lainnya</option></select>
+          <select id="pkmk-dept"><option value="">-- Pilih Bagian --</option><option value="Program Pemberdayaan Masyarakat">Program Pemberdayaan Masyarakat</option><option value="Program Rehabilitasi Fisik">Program Rehabilitasi Fisik</option><option value="Program Tanggap Bencana">Program Tanggap Bencana</option><option value="Administrasi &amp; Keuangan">Administrasi &amp; Keuangan</option><option value="HR">HR</option></select>
           <span class="errmsg" id="err-pkmk-dept">Pilih bagian/program</span>
         </div>
       </div>
@@ -273,10 +273,8 @@
     <div class="form-row full">
       <div class="form-group"><label>Jenis Permintaan <span class="req">*</span></label>
         <div class="radio-group">
-          <div class="radio-item"><input type="radio" name="jenis" id="j1" value="Tenaga Baru (Formasi Baru)"/><label for="j1"><div class="dot"></div>&#128338; Tenaga Baru</label></div>
           <div class="radio-item"><input type="radio" name="jenis" id="j2" value="Penggantian (Replacement)"/><label for="j2"><div class="dot"></div>&#128260; Penggantian</label></div>
-          <div class="radio-item"><input type="radio" name="jenis" id="j3" value="Perpanjangan Kontrak"/><label for="j3"><div class="dot"></div>&#128257; Perpanjang Kontrak</label></div>
-          <div class="radio-item"><input type="radio" name="jenis" id="j4" value="Tenaga Tambahan (Beban Kerja)"/><label for="j4"><div class="dot"></div>&#128200; Tenaga Tambahan</label></div>
+          <div class="radio-item"><input type="radio" name="jenis" id="j4" value="Dokter Mitra / Part Time"/><label for="j4"><div class="dot"></div>&#128200; Dokter Mitra / Part Time</label></div>
         </div>
         <span class="errmsg" id="err-jenis">Pilih jenis permintaan</span>
       </div>
@@ -296,7 +294,7 @@
     </div>
     <div class="form-row three">
       <div class="form-group"><label>Status Kepegawaian <span class="req">*</span></label>
-        <select id="d-status"><option value="">-- Pilih Status --</option><option value="Karyawan Tetap (PKWTT)">Karyawan Tetap (PKWTT)</option><option value="Kontrak (PKWT)">Kontrak / PKWT</option><option value="Magang / Internship">Magang / Internship</option><option value="Part Time">Part Time</option><option value="Dokter Mitra / Visiting">Dokter Mitra / Visiting</option></select>
+        <select id="d-status"><option value="">-- Pilih Status --</option><option value="Kontrak (PKWT)">Kontrak / PKWT</option><option value="Dokter Mitra / Part Time">Dokter Mitra / Part Time</option></select>
         <span class="errmsg" id="err-d-status">Pilih status kepegawaian</span>
       </div>
       <div class="form-group"><label>Jumlah SDM Dibutuhkan <span class="req">*</span></label><input type="number" id="d-jumlah" min="1" max="100" placeholder="cth: 3"/><span class="errmsg" id="err-d-jumlah">Isi jumlah (min. 1)</span></div>
@@ -306,7 +304,7 @@
     <div class="sec-title">Kualifikasi Minimum</div>
     <div class="form-row">
       <div class="form-group"><label>Pendidikan Minimum <span class="req">*</span></label>
-        <select id="d-pendidikan"><option value="">-- Pilih Pendidikan --</option><option value="SMA / SMK">SMA / SMK Sederajat</option><option value="D3 (Diploma Tiga)">D3 (Diploma Tiga)</option><option value="D4 / S1">D4 / S1</option><option value="Profesi (Ners/Apoteker/dll)">Profesi (Ners / Apoteker / Dokter)</option><option value="S2 / Spesialis">S2 / Spesialis</option></select>
+        <select id="d-pendidikan"><option value="">-- Pilih Pendidikan --</option><option value="SMA / SMK">SMA / SMK Sederajat</option><option value="D3 (Diploma Tiga)">D3 (Diploma Tiga)</option><option value="D4">D4</option><option value="S1">S1</option><option value="Profesi (Ners/Apoteker/dll)">Profesi (Ners / Apoteker / Dokter)</option><option value="S2 / Spesialis">S2 / Spesialis</option></select>
         <span class="errmsg" id="err-d-pendidikan">Pilih pendidikan minimum</span>
       </div>
       <div class="form-group"><label>Pengalaman Kerja Minimum</label>
@@ -589,3 +587,4 @@ function resetForm(){
 </script>
 </body>
 </html>
+
